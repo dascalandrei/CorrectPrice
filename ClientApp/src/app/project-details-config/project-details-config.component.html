@@ -1,0 +1,137 @@
+<h3>Detalii proiect</h3>
+<div class="accordion-action-buttons">
+  <button mat-button (click)="accordion.openAll()">Expandeaza tot</button>
+  <button mat-button (click)="accordion.closeAll()">Colapseaza tot</button>
+</div>
+<mat-accordion class="accordion-container" multi>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Produse brute la nivel de colectie de proiecte
+      </mat-panel-title>
+      <mat-panel-description class="accordion-description">
+        Daca nu le suprascrii la nivel de proiect, atunci mai jos gasesti valorile de referinta
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="rough-products-container">
+      <mat-card *ngFor="let collectionRoughProductConfiguration of collectionRoughProductConfigurations" class="rough-product-container">
+        <mat-card-header>
+          <div mat-card-avatar class="rough-product-header"></div>
+          <mat-card-title>{{collectionRoughProductConfiguration.name}}</mat-card-title>
+          <mat-card-subtitle>{{collectionRoughProductConfiguration.description}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            Cantitatea minima de cumparat: <b>{{collectionRoughProductConfiguration.quantity}}</b>
+          </p>
+          <p>
+            Unitatea de masura: <b>{{collectionRoughProductConfiguration.unitOfMeasure}}</b>
+          </p>
+          <p>
+            Pretul pentru cantitatea de mai sus: <b>{{collectionRoughProductConfiguration.cost}}</b>
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="expandRoughProducts">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Produse brute la nivel de proiect
+      </mat-panel-title>
+      <mat-panel-description class="accordion-description">
+        Daca ai suprascris valorile de la colectie, atunci mai jos gasesti noile valori de referinta
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="rough-products-container">
+      <mat-card *ngFor="let projectRoughProductConfiguration of projectRoughProductConfigurations" class="rough-product-container">
+        <mat-card-header>
+          <div mat-card-avatar class="rough-product-header"></div>
+          <mat-card-title>{{projectRoughProductConfiguration.name}}</mat-card-title>
+          <mat-card-subtitle>{{projectRoughProductConfiguration.description}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            Cantitatea minima de cumparat: <b>{{projectRoughProductConfiguration.quantity}}</b>
+          </p>
+          <p>
+            Unitatea de masura: <b>{{projectRoughProductConfiguration.unitOfMeasure}}</b>
+          </p>
+          <p>
+            Pretul pentru cantitatea de mai sus: <b>{{projectRoughProductConfiguration.cost}}</b>
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <mat-card class="add-new-rough-product-card">
+      <mat-card-header>
+        <div mat-card-avatar class="add-new-rough-product-header"></div>
+        <mat-card-title>Adauga un nou produs brut</mat-card-title>
+        <mat-card-subtitle>Atentie! Acesta va fi vizibil doar la nivelul acestui proiect, daca nu bifezi si optiunea de importare la nivel de colectie</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="roughProductFormGroup" (ngSubmit)="updateRoughProduct()" class="add-new-rough-product-form" #roughProductformDirective="ngForm">
+          <mat-form-field appearance="fill" class="form-field">
+            <mat-label>Nume</mat-label>
+            <input matInput formControlName="name" />
+            <mat-hint>Hint: Numele noului produs brut</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="form-field">
+            <mat-label>Descriere</mat-label>
+            <textarea matInput formControlName="description"></textarea>
+            <mat-hint>Hint: Scurta descriere a noului produs brut</mat-hint>
+          </mat-form-field>
+          <div class="price-details">
+            <mat-form-field appearance="fill" class="form-field quantity">
+              <mat-label>Cantitate</mat-label>
+              <input type="number" matInput formControlName="quantity" />
+              <mat-hint>Hint: Cantitatea la care se vinde produsul. De exemplu: 1 daca se vinde la 1KG sau la 1L sau la 1buc</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>Unitatea de masura</mat-label>
+              <select matNativeControl formControlName="unitOfMeasure">
+                <option *ngFor="let unit of unitOfMeasureValues" [value]="unit" [label]="unitOfMeasures[unit]"></option>
+              </select>
+              <mat-hint>Hint: Unitatea de masura. De exemplu: KG, Litru, Buc, samd</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="form-field price">
+              <mat-label>Pretul de achizitie</mat-label>
+              <input type="number" matInput formControlName="cost" />
+              <mat-hint>Hint: Pretul de achizitie pentru cantitatea mentionata mai sus</mat-hint>
+            </mat-form-field>
+          </div>
+          <mat-checkbox formControlName="includeInCollection" class="form-field-check-box" color="primary">Include produsul la nivel de colectie daca vrei sa il refolosesti ulterior</mat-checkbox>
+          <button mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </mat-expansion-panel>
+  <mat-expansion-panel [expanded]="expandFinalProducts">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Produse finite
+      </mat-panel-title>
+      <mat-panel-description class="accordion-description">
+        Mai jos poti adauga produsele finite pentru acest proiect
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-card *ngFor="let collectionRoughProductConfiguration of collectionRoughProductConfigurations" class="collection-rough-product-container">
+      <mat-card-header>
+        <div mat-card-avatar class="collection-rough-product-header"></div>
+        <mat-card-title>{{projectRoughProductConfigurations.name}}</mat-card-title>
+        <mat-card-subtitle>{{projectRoughProductConfigurations.description}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>
+          Cantitatea minima de cumparat: {{projectRoughProductConfigurations.quantity}}
+        </p>
+        <p>
+          Unitatea de masura: {{projectRoughProductConfigurations.unitOfMeasure}}
+        </p>
+        <p>
+          Pretul pentru cantitatea de mai sus: {{projectRoughProductConfigurations.cost}}
+        </p>
+      </mat-card-content>
+    </mat-card>
+  </mat-expansion-panel>
+</mat-accordion>

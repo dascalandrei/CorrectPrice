@@ -1,0 +1,38 @@
+<div *ngIf="isLoaded" class="projects-container">
+  <div class="view-project-container">
+    <h3 class="view-title">Lista de proiecte:</h3>
+    <div *ngFor="let project of projects" class="project-details">
+      <div>
+        <h2>{{ project.name }}</h2>
+        <p>{{ project.description }}</p>
+      </div>
+      <div class="action-button-container">
+        <button mat-fab color="primary" class="action-button" (click)="viewProject(project)">View</button>
+        <button mat-fab color="primary" class="action-button" (click)="editProject(project)">Edit</button>
+        <button mat-fab color="warn" class="action-button" (click)="deleteProject(project)">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="update-project-container">
+    <h3 *ngIf="updatedProjectConfiguration" class="add-title">Actualizeaza datele pentru pentru proiect</h3>
+    <h3 *ngIf="!updatedProjectConfiguration" class="add-title">Adauga un nou proiect</h3>
+    <form [formGroup]="projectForm" (ngSubmit)="updateProject()" class="update-project-form" #formDirective="ngForm">
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>CollectionID</mat-label>
+        <input matInput formControlName="projectCollectionID" />
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Nume</mat-label>
+        <input matInput formControlName="name" />
+        <mat-hint>Hint: Numele noului proiect</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Descriere</mat-label>
+        <input matInput formControlName="description" />
+        <mat-hint>Hint: Scurta descriere a noului proiect</mat-hint>
+      </mat-form-field>
+      <button *ngIf="updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+      <button *ngIf="!updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+    </form>
+  </div>
+</div>

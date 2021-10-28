@@ -1,0 +1,39 @@
+<div *ngIf="isLoaded" class="project-collection-container">
+  <div class="view-collections-container">
+    <h3 class="view-title-collections">Lista de colectii:</h3>
+    <div *ngFor="let projectCollection of projectCollections" class="project-collection">
+      <div>
+        <h2>{{ projectCollection.name }}</h2>
+        <p>{{ projectCollection.description }}</p>
+      </div>
+      <div class="action-button-container">
+        <button mat-fab color="primary" class="action-button" (click)="viewProjectCollection(projectCollection)">View</button>
+        <button mat-fab color="primary" class="action-button" (click)="editProjectCollection(projectCollection)">Edit</button>
+        <button mat-fab color="warn" class="action-button" (click)="deleteProjectCollection(projectCollection)">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="update-colection-container">
+    <h3 *ngIf="updatedProjectCollection" class="add-title">Actualizeaza datele pentru colectia de proiecte</h3>
+    <h3 *ngIf="!updatedProjectCollection" class="add-title">Adauga o noua colectie de proiecte</h3>
+    <form [formGroup]="projectCollectionForm" (ngSubmit)="updateProjectCollection()" class="update-project-collection-form" #formDirective="ngForm">
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>ClientID</mat-label>
+        <input matInput formControlName="clientID" />
+        <mat-hint>Hint: ID-ul de client</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Nume</mat-label>
+        <input matInput formControlName="name" />
+        <mat-hint>Hint: Numele noii colectii de proiecte</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Descriere</mat-label>
+        <input matInput formControlName="description" />
+        <mat-hint>Hint: Scurta descriere a noii colectii de proiecte</mat-hint>
+      </mat-form-field>
+      <button *ngIf="updatedProjectCollection" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+      <button *ngIf="!updatedProjectCollection" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+    </form>
+  </div>
+</div>

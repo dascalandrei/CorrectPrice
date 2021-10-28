@@ -1,0 +1,52 @@
+.projects-container {
+  display: flex;
+  justify-content: space-between;
+
+  .view-project-container {
+    flex: 1;
+    margin-right: 48px;
+
+    .view-title {
+      margin-bottom: 20px;
+    }
+
+    .project-details {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+
+      .action-button-container {
+        display: flex;
+
+        .action-button {
+          margin-left: 16px;
+        }
+      }
+    }
+  }
+
+  .update-project-container {
+    flex: 1;
+    margin-left: 48px;
+
+    .add-title {
+      margin-bottom: 20px;
+    }
+
+    .update-project-form {
+      display: flex;
+      flex-direction: column;
+
+      .form-field {
+        margin-bottom: 8px;
+      }
+
+      .add-button {
+        margin-top: 32px;
+        width: 50%;
+        align-self: end;
+      }
+    }
+  }
+}

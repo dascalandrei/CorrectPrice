@@ -1,0 +1,63 @@
+.accordion-action-buttons {
+  margin-top: 48px;
+  margin-bottom: 12px;
+}
+
+.accordion-container {
+  .accordion-description {
+    display: flex;
+    justify-content: end;
+  }
+
+  .rough-products-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .rough-product-container {
+      max-width: 300px;
+      margin: 8px;
+
+      .rough-product-header {
+        background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+        background-size: cover;
+      }
+    }
+  }
+
+  .add-new-rough-product-card {
+    .form-field {
+      margin: 8px;
+    }
+
+    .form-field-check-box {
+      margin-left: 8px;
+      margin-top: 16px;
+    }
+
+    .add-new-rough-product-header {
+      background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+      background-size: cover;
+    }
+
+    .add-new-rough-product-form {
+      display: flex;
+      flex-direction: column;
+
+      .price-details {
+        display: flex;
+        justify-content: space-between;
+
+        .quantity, .price {
+          flex: 1;
+        }
+      }
+
+      .add-button {
+        margin-top: 32px;
+        width: 50%;
+        align-self: end;
+      }
+    }
+  }
+}
