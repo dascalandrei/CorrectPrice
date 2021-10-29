@@ -30,3 +30,19 @@ export enum UnitOfMeasure {
     Gram = 22,
     Kg = 24,
 }
+
+export interface FiniteProductConfiguration {
+    id: string;
+    projectID: string;
+    name: string;
+    description: string;
+    cost: number;
+    productDetails: ProductDetails[];
+}
+
+export interface ProductDetails {
+    roughProductID: string;
+    name: string;
+    cost: number;
+    quantity: number;
+}

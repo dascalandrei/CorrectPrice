@@ -1,3 +1,4 @@
+using CorrectPrice.Core.Engine.Contract;
 using CorrectPrice.Core.Resource.Contract;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -89,17 +90,21 @@ namespace CorrectPrice
         {
             dependencyInjection = new Dictionary<string, object>();
 
+            IPriceCalculatorEngine priceCalculatorEngine = new Core.Engine.PriceCalculatorEngine();
             IProjectCollectionConfigResource projectCollectionConfigResource = new Core.Resource.ProjectCollectionConfigResource();
             IProjectConfigResource projectConfigResource = new Core.Resource.ProjectConfigResource();
             IRoughProductConfigurationResource roughProductConfigurationResource = new Core.Resource.RoughProductConfigurationResource();
+            IFiniteProductConfigResource finiteProductConfigResource = new Core.Resource.FiniteProductConfigResource();
 
             Core.Contract.Configuration.IProjectCollectionConfigManager projectCollectionConfigManager = new Core.Manager.Configuration.ProjectCollectionConfigManager(projectCollectionConfigResource);
             Core.Contract.Configuration.IProjectConfigManager projectConfigManager = new Core.Manager.Configuration.ProjectConfigManager(projectConfigResource);
             Core.Contract.Configuration.IRoughProductConfigManager roughProductConfigManager = new Core.Manager.Configuration.RoughProductConfigManager(roughProductConfigurationResource);
+            Core.Contract.Configuration.IFiniteProductConfigManager finiteProductConfigManager = new Core.Manager.Configuration.FiniteProductConfigManager(priceCalculatorEngine, finiteProductConfigResource, roughProductConfigurationResource);
 
             dependencyInjection.Add("Core.Contract.Configuration.IProjectCollectionConfigManager", projectCollectionConfigManager);
             dependencyInjection.Add("Core.Contract.Configuration.IProjectConfigManager", projectConfigManager);
             dependencyInjection.Add("Core.Contract.Configuration.IRoughProductConfigManager", roughProductConfigManager);
+            dependencyInjection.Add("Core.Contract.Configuration.IFiniteProductConfigManager", finiteProductConfigManager);
         }
     }
 }

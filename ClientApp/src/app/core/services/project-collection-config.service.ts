@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { ApiHttpClient } from "./api-http-client.service";
-import { ProjectCollectionConfiguration, ProjectConfiguration, RoughProductConfiguration } from "../models/project-configuration.model";
+import { ProjectCollectionConfiguration, ProjectConfiguration, RoughProductConfiguration, FiniteProductConfiguration } from "../models/project-configuration.model";
 
 @Injectable()
 export class ProjectCollectionConfigService {
@@ -33,6 +33,13 @@ export class ProjectCollectionConfigService {
         return this.httpClient.post<RoughProductConfiguration[]>('ProjectConfiguration/ListAllRoughProductConfigurationsByProject', formData)
     }
 
+    listAllFiniteProductConfigurationsByProject(projectID: string): Observable<FiniteProductConfiguration[]> {
+        const formData: FormData = new FormData();
+        formData.append("projectID", projectID);
+
+        return this.httpClient.post<FiniteProductConfiguration[]>('ProjectConfiguration/ListAllFiniteProductConfigurationsByProject', formData)
+    }
+
     updateProjectCollection(projectCollectionConfiguration: ProjectCollectionConfiguration) {
         return this.httpClient.post('ProjectConfiguration/UpdateProjectCollectionConfiguration', projectCollectionConfiguration);
     }
@@ -43,6 +50,10 @@ export class ProjectCollectionConfigService {
 
     updateRoughProductConfiguration(roughProductConfiguration: RoughProductConfiguration) {
         return this.httpClient.post('ProjectConfiguration/UpdateRoughProductConfiguration', roughProductConfiguration);
+    }
+
+    updateFiniteProductConfiguration(finiteProductConfiguration: FiniteProductConfiguration) {
+        return this.httpClient.post('ProjectConfiguration/UpdateFiniteProductConfiguration', finiteProductConfiguration);
     }
 
     deleteProjectCollection(id: string) {
@@ -64,5 +75,12 @@ export class ProjectCollectionConfigService {
         formData.append("id", id);
 
         return this.httpClient.post('ProjectConfiguration/DeleteRoughProductConfiguration', formData);
+    }
+
+    deleteFiniteProductConfiguration(id: string) {
+        const formData: FormData = new FormData();
+        formData.append("id", id);
+
+        return this.httpClient.post('ProjectConfiguration/DeleteFiniteProductConfiguration', formData);
     }
 }
