@@ -19,8 +19,6 @@ import { Guid } from './core/services/guid.service';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { ProjectCollectionConfigComponent } from './project-collection-config/project-collection-config.component';
 import { ProjectCollectionConfigService } from './core/services/project-collection-config.service';
 import { ProjectConfigComponent } from './project-config/project-config.component';
@@ -32,8 +30,6 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
         AppComponent,
         NavMenuComponent,
         HomeComponent,
-        CounterComponent,
-        FetchDataComponent,
         ProjectCollectionConfigComponent,
         ProjectConfigComponent,
         ProjectDetailsConfigComponent
@@ -54,8 +50,6 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
         MatCheckboxModule,
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },
-            { path: 'counter', component: CounterComponent },
-            { path: 'fetch-data', component: FetchDataComponent },
             { path: 'client-projects-collection', component: ProjectCollectionConfigComponent },
             { path: 'project-collection/:id', component: ProjectConfigComponent },
             { path: 'project-details/:collectionID/:projectID', component: ProjectDetailsConfigComponent }

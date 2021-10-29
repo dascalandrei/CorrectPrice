@@ -30,6 +30,8 @@ export class ProjectConfigComponent implements OnInit {
     ngOnInit() {
         this.projectCollectionID = this.route.snapshot.paramMap.get('id');
 
+        this.projectCollectionConfigService.projectCollectionSelected(this.projectCollectionID);
+
         this.loadConfiguration();
     }
 

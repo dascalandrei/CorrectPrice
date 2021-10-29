@@ -1,11 +1,30 @@
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Injectable, EventEmitter } from "@angular/core";
+import { Observable, BehaviorSubject } from "rxjs";
 import { ApiHttpClient } from "./api-http-client.service";
 import { ProjectCollectionConfiguration, ProjectConfiguration, RoughProductConfiguration, FiniteProductConfiguration } from "../models/project-configuration.model";
 
 @Injectable()
 export class ProjectCollectionConfigService {
+    projectCollectionIDObservable: Observable<string>;
+    projectIDObservable: Observable<string>;
+
+    private projectCollectionID: BehaviorSubject<string>;
+    private projectID: BehaviorSubject<string>;
+
     constructor(private httpClient: ApiHttpClient) {
+        this.projectCollectionID = new BehaviorSubject<string>(null);
+        this.projectID = new BehaviorSubject<string>(null);
+
+        this.projectCollectionIDObservable = this.projectCollectionID.asObservable();
+        this.projectIDObservable = this.projectID.asObservable();
+    }
+
+    projectCollectionSelected(projectCollectionID: string) {
+        this.projectCollectionID.next(projectCollectionID);
+    }
+
+    projectSelected(projectID: string) {
+        this.projectID.next(projectID);
     }
 
     listAllProjectCollections(): Observable<ProjectCollectionConfiguration[]> {

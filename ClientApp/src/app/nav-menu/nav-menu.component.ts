@@ -1,18 +1,57 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ProjectCollectionConfigService } from '../core/services/project-collection-config.service';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-nav-menu',
-  templateUrl: './nav-menu.component.html',
-  styleUrls: ['./nav-menu.component.css']
+    selector: 'app-nav-menu',
+    templateUrl: './nav-menu.component.html',
+    styleUrls: ['./nav-menu.component.css']
 })
-export class NavMenuComponent {
-  isExpanded = false;
+export class NavMenuComponent implements OnInit, OnDestroy {
+    collectionID: string;
+    projectID: string;
 
-  collapse() {
-    this.isExpanded = false;
-  }
+    private collectionSelected: any;
+    private projectSelected: any;
 
-  toggle() {
-    this.isExpanded = !this.isExpanded;
-  }
+    constructor(
+        private router: Router,
+        private projectCollectionConfigService: ProjectCollectionConfigService) {
+    }
+
+    ngOnInit() {
+
+        this.collectionSelected = this.projectCollectionConfigService.projectCollectionIDObservable.subscribe((collectionID: string) => {
+            this.collectionID = collectionID;
+            console.log(collectionID);
+        });
+
+        this.projectSelected = this.projectCollectionConfigService.projectIDObservable.subscribe((projectID: string) => {
+            this.projectID = projectID;
+            console.log(projectID);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.collectionSelected.unsubscribe();
+        this.projectSelected.unsubscribe();
+    }
+
+    isExpanded = false;
+
+    collapse() {
+        this.isExpanded = false;
+    }
+
+    toggle() {
+        this.isExpanded = !this.isExpanded;
+    }
+
+    redirectToCollection() {
+        this.router.navigate(['/project-collection', this.collectionID]);
+    }
+
+    redirectToProject() {
+        this.router.navigate(['/project-details', this.collectionID, this.projectID]);
+    }
 }

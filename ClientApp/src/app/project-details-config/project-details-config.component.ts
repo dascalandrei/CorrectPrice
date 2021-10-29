@@ -43,6 +43,9 @@ export class ProjectDetailsConfigComponent implements OnInit {
         this.projectCollectionID = this.route.snapshot.paramMap.get('collectionID');
         this.projectID = this.route.snapshot.paramMap.get('projectID');
 
+        this.projectCollectionConfigService.projectCollectionSelected(this.projectCollectionID);
+        this.projectCollectionConfigService.projectSelected(this.projectID);
+
         this.expandFinalProducts = true;
         this.unitOfMeasureValues = Object.keys(this.unitOfMeasures).filter(k => !isNaN(Number(k)));
 
