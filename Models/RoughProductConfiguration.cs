@@ -12,6 +12,8 @@ namespace CorrectPrice.Client.Models
 
         public Guid? ProjectID { get; set; }
 
+        public Guid? ImportedID { get; set; }
+
         public DateTime EffectiveDate { get; set; }
 
         public string Name { get; set; }

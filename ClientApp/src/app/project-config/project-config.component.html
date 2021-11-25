@@ -1,38 +1,137 @@
-<div *ngIf="isLoaded" class="projects-container">
-  <div class="view-project-container">
-    <h3 class="view-title">Lista de proiecte:</h3>
-    <div *ngFor="let project of projects" class="project-details">
-      <div>
-        <h2>{{ project.name }}</h2>
-        <p>{{ project.description }}</p>
-      </div>
-      <div class="action-button-container">
-        <button mat-fab color="primary" class="action-button" (click)="viewProject(project)">View</button>
-        <button mat-fab color="primary" class="action-button" (click)="editProject(project)">Edit</button>
-        <button mat-fab color="warn" class="action-button" (click)="deleteProject(project)">Delete</button>
-      </div>
-    </div>
+<ng-container *ngIf="isLoaded">
+  <h3>Lista proiecte si produsele brute pentru colectia: {{projectCollectionID}}</h3>
+  <div class="accordion-action-buttons">
+    <button mat-button (click)="accordion.openAll()">Expandeaza tot</button>
+    <button mat-button (click)="accordion.closeAll()">Colapseaza tot</button>
   </div>
-  <div class="update-project-container">
-    <h3 *ngIf="updatedProjectConfiguration" class="add-title">Actualizeaza datele pentru pentru proiect</h3>
-    <h3 *ngIf="!updatedProjectConfiguration" class="add-title">Adauga un nou proiect</h3>
-    <form [formGroup]="projectForm" (ngSubmit)="updateProject()" class="update-project-form" #formDirective="ngForm">
-      <mat-form-field appearance="fill" class="form-field">
-        <mat-label>CollectionID</mat-label>
-        <input matInput formControlName="projectCollectionID" />
-      </mat-form-field>
-      <mat-form-field appearance="fill" class="form-field">
-        <mat-label>Nume</mat-label>
-        <input matInput formControlName="name" />
-        <mat-hint>Hint: Numele noului proiect</mat-hint>
-      </mat-form-field>
-      <mat-form-field appearance="fill" class="form-field">
-        <mat-label>Descriere</mat-label>
-        <input matInput formControlName="description" />
-        <mat-hint>Hint: Scurta descriere a noului proiect</mat-hint>
-      </mat-form-field>
-      <button *ngIf="updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
-      <button *ngIf="!updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
-    </form>
-  </div>
-</div>
+  <mat-accordion class="accordion-container" multi>
+    <mat-expansion-panel [expanded]="expandCollectionProjects">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Lista de proiecte
+        </mat-panel-title>
+        <mat-panel-description class="accordion-description">
+          Mai jos gasesti lista de proiecte definite. Poti edita sau adauga un nou proiect
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="projects-container">
+        <mat-card *ngFor="let project of projects" class="project-container">
+          <mat-card-header>
+            <div mat-card-avatar class="project-header"></div>
+            <mat-card-title>{{project.name}}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="project-description" matTooltip="{{project.description}}">
+              {{project.description}}
+            </p>
+            <div class="action-button-container">
+              <div>
+                <button mat-fab color="primary" (click)="viewProject(project)">View</button>
+                <button mat-fab color="primary" class="edit-button" (click)="editProject(project)">Edit</button>
+              </div>
+              <button mat-fab color="warn" (click)="deleteProject(project)">Delete</button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <mat-card class="add-new-project-card">
+        <mat-card-header>
+          <div mat-card-avatar class="add-new-project-header"></div>
+          <mat-card-title *ngIf="!updatedProjectConfiguration">Adauga un nou proiect</mat-card-title>
+          <mat-card-title *ngIf="updatedProjectConfiguration">Actualizeaza datele pentru proiect</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="projectForm" (ngSubmit)="updateProject()" class="update-project-form" #formDirective="ngForm">
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>Nume</mat-label>
+              <input matInput formControlName="name" />
+              <mat-hint>Hint: Numele noului proiect</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>Descriere</mat-label>
+              <textarea matInput formControlName="description" class="project-description"></textarea>
+              <mat-hint>Hint: Scurta descriere a noului proiect</mat-hint>
+            </mat-form-field>
+            <button *ngIf="!updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+            <button *ngIf="updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-expansion-panel>
+    <mat-expansion-panel [expanded]="expandRoughProducts">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Produse brute la nivel de colectie
+        </mat-panel-title>
+        <mat-panel-description class="accordion-description">
+          Adauga produse la nivel de colectie pentru a le putea folosi in produsele finite
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="rough-products-container">
+        <mat-card *ngFor="let projectRoughProductConfiguration of projectRoughProductConfigurations" class="rough-product-container">
+          <mat-card-header>
+            <div mat-card-avatar class="rough-product-header"></div>
+            <mat-card-title>{{projectRoughProductConfiguration.name}}</mat-card-title>
+            <mat-card-subtitle class="rough-product-description" matTooltip="{{projectRoughProductConfiguration.description}}">{{projectRoughProductConfiguration.description}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>
+              Cantitatea minima de cumparat: <b>{{projectRoughProductConfiguration.quantity}}</b>
+            </p>
+            <p>
+              Unitatea de masura: <b>{{projectRoughProductConfiguration.unitOfMeasure}}</b>
+            </p>
+            <p>
+              Pretul pentru cantitatea de mai sus: <b>{{projectRoughProductConfiguration.cost}}</b>
+            </p>
+            <button mat-fab color="primary" class="edit-button" (click)="editRoughProductAtProject(projectRoughProductConfiguration)">Edit</button>
+            <button mat-fab color="warn" (click)="deleteRoughProductAtProject(projectRoughProductConfiguration)" class="delete-button">Delete</button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <mat-card class="add-new-rough-product-card">
+        <mat-card-header>
+          <div mat-card-avatar class="add-new-rough-product-header"></div>
+          <mat-card-title *ngIf="!updatedRoughProductConfiguration">Adauga un nou produs brut</mat-card-title>
+          <mat-card-title *ngIf="updatedRoughProductConfiguration">Actualizeaza datele pentru produs</mat-card-title>
+          <mat-card-subtitle>Atentie! Acesta va trebui importat cand vrei sa il folosesti la nivel de proiect</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="roughProductFormGroup" (ngSubmit)="updateRoughProduct()" class="add-new-rough-product-form" #roughProductFormDirective="ngForm">
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>Nume</mat-label>
+              <input matInput formControlName="name" />
+              <mat-hint>Hint: Numele noului produs brut</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="form-field">
+              <mat-label>Descriere</mat-label>
+              <textarea matInput formControlName="description" class="rough-product-description"></textarea>
+              <mat-hint>Hint: Scurta descriere a noului produs brut</mat-hint>
+            </mat-form-field>
+            <div class="price-details">
+              <mat-form-field appearance="fill" class="form-field quantity">
+                <mat-label>Cantitate</mat-label>
+                <input type="number" matInput formControlName="quantity" />
+                <mat-hint>Hint: Cantitatea la care se vinde produsul. De exemplu: 1 daca se vinde la 1KG sau la 1L sau la 1buc</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Unitatea de masura</mat-label>
+                <select matNativeControl formControlName="unitOfMeasure">
+                  <option *ngFor="let unit of unitOfMeasureValues" [value]="unit" [label]="unitOfMeasures[unit]"></option>
+                </select>
+                <mat-hint>Hint: Unitatea de masura. De exemplu: KG, Litru, Buc, samd</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="form-field price">
+                <mat-label>Pretul de achizitie</mat-label>
+                <input type="number" matInput formControlName="cost" />
+                <mat-hint>Hint: Pretul de achizitie pentru cantitatea mentionata mai sus</mat-hint>
+              </mat-form-field>
+            </div>
+            <button *ngIf="!updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+            <button *ngIf="updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

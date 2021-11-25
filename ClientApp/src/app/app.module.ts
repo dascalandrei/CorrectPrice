@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID, DEFAULT_CURRENCY_CODE } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -12,6 +12,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTableModule } from '@angular/material/table';
 
 import { ApiHttpClient } from './core/services/api-http-client.service';
 import { Guid } from './core/services/guid.service';
@@ -48,6 +50,8 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
         MatDatepickerModule,
         BrowserAnimationsModule,
         MatCheckboxModule,
+        MatTooltipModule,
+        MatTableModule,
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },
             { path: 'client-projects-collection', component: ProjectCollectionConfigComponent },
@@ -55,7 +59,13 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
             { path: 'project-details/:collectionID/:projectID', component: ProjectDetailsConfigComponent }
         ], { relativeLinkResolution: 'legacy' })
     ],
-    providers: [
+    providers: [{
+        provide: LOCALE_ID,
+        useValue: 'ro-RO'
+    }, {
+        provide: DEFAULT_CURRENCY_CODE,
+        useValue: 'RON'
+    },
         ApiHttpClient,
         ProjectCollectionConfigService,
         Guid

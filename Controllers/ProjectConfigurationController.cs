@@ -49,7 +49,7 @@ namespace CorrectPrice.Client.Controllers
         }
 
         [HttpPost]
-        public RoughProductConfiguration[] ListAllRoughProductConfigurationsByCollection(Guid projectCollectionID)
+        public RoughProductConfiguration[] ListAllRoughProductConfigurationsByCollection([FromForm]Guid projectCollectionID)
         {
             List<RoughProductConfiguration> roughProductConfigurations = new List<RoughProductConfiguration>();
 
@@ -60,7 +60,7 @@ namespace CorrectPrice.Client.Controllers
         }
 
         [HttpPost]
-        public RoughProductConfiguration[] ListAllRoughProductConfigurationsByProject(Guid projectID)
+        public RoughProductConfiguration[] ListAllRoughProductConfigurationsByProject([FromForm]Guid projectID)
         {
             List<RoughProductConfiguration> roughProductConfigurations = new List<RoughProductConfiguration>();
 
@@ -71,7 +71,7 @@ namespace CorrectPrice.Client.Controllers
         }
 
         [HttpPost]
-        public FiniteProductConfiguration[] ListAllFiniteProductConfigurationsByProject(Guid projectID)
+        public FiniteProductConfiguration[] ListAllFiniteProductConfigurationsByProject([FromForm]Guid projectID)
         {
             List<FiniteProductConfiguration> finiteProductConfigurations = new List<FiniteProductConfiguration>();
 
@@ -92,7 +92,7 @@ namespace CorrectPrice.Client.Controllers
         {
             projectConfigManager.UpdateProjectConfiguration(ConvertToContract(projectConfiguration));
         }
-        
+
         [HttpPost]
         public void UpdateRoughProductConfiguration(RoughProductConfiguration roughProductConfiguration)
         {
@@ -124,9 +124,27 @@ namespace CorrectPrice.Client.Controllers
         }
 
         [HttpPost]
+        public void DeleteRoughProductCollectionConfiguration([FromForm] Guid id)
+        {
+            roughProductConfigManager.DeleteRoughProductCollectionConfiguration(id);
+        }
+
+        [HttpPost]
         public void DeleteFiniteProductConfiguration([FromForm] Guid id)
         {
             finiteProductConfigManager.DeleteFiniteProductConfiguration(id);
+        }
+
+        [HttpPost]
+        public FiniteProductConfiguration CalculateFiniteProductCosts(FiniteProductConfiguration finiteProductConfiguration)
+        {
+            return ConvertToModel(finiteProductConfigManager.CalculateFiniteProductCosts(ConvertToContract(finiteProductConfiguration)));
+        }
+
+        [HttpPost]
+        public ProjectConfigurationDetails DetailProjectConfigurationDetails([FromForm] Guid projectID)
+        {
+            return ConvertToModel(projectConfigManager.DetailProjectConfigurationDetails(projectID));
         }
 
         private ProjectCollectionConfiguration ConvertToModel(Core.Contract.Configuration.ProjectCollectionConfiguration projectCollectionConfiguration)
@@ -139,7 +157,7 @@ namespace CorrectPrice.Client.Controllers
                 Description = projectCollectionConfiguration.Description
             };
         }
-        
+
         private Core.Contract.Configuration.ProjectCollectionConfiguration ConvertToContract(ProjectCollectionConfiguration projectCollectionConfiguration)
         {
             return new Core.Contract.Configuration.ProjectCollectionConfiguration()
@@ -180,6 +198,7 @@ namespace CorrectPrice.Client.Controllers
                 ID = roughProductConfiguration.ID,
                 ProjectCollectionID = roughProductConfiguration.ProjectCollectionID,
                 ProjectID = roughProductConfiguration.ProjectID,
+                ImportedID = roughProductConfiguration.ImportedID,
                 Name = roughProductConfiguration.Name,
                 Description = roughProductConfiguration.Description,
                 EffectiveDate = roughProductConfiguration.EffectiveDate,
@@ -196,6 +215,7 @@ namespace CorrectPrice.Client.Controllers
                 ID = roughProductConfiguration.ID,
                 ProjectCollectionID = roughProductConfiguration.ProjectCollectionID,
                 ProjectID = roughProductConfiguration.ProjectID,
+                ImportedID = roughProductConfiguration.ImportedID,
                 Name = roughProductConfiguration.Name,
                 Description = roughProductConfiguration.Description,
                 EffectiveDate = roughProductConfiguration.EffectiveDate,
@@ -246,7 +266,36 @@ namespace CorrectPrice.Client.Controllers
             return new Core.Contract.Configuration.ProductDetails()
             {
                 RoughProductID = productDetails.RoughProductID,
+                Name = productDetails.Name,
                 Quantity = productDetails.Quantity
+            };
+        }
+
+        private ProjectConfigurationDetails ConvertToModel(Core.Contract.Configuration.ProjectConfigurationDetails projectConfigurationDetails)
+        {
+            return new ProjectConfigurationDetails()
+            {
+                ID = projectConfigurationDetails.ID,
+                ProjectCollectionID = projectConfigurationDetails.ProjectCollectionID,
+                RoughProductDetails = projectConfigurationDetails.RoughProductDetails.Select(x => ConvertToModel(x)).ToArray(),
+                TotalCostPerQuantityNeeded = projectConfigurationDetails.TotalCostPerQuantityNeeded,
+                TotalCostPerQuantityToBuy = projectConfigurationDetails.TotalCostPerQuantityToBuy,
+                TotalCostPerRemainQuantity = projectConfigurationDetails.TotalCostPerRemainQuantity
+            };
+        }
+
+        private RoughProductDetails ConvertToModel(Core.Contract.Configuration.RoughProductDetails roughProductDetails)
+        {
+            return new RoughProductDetails()
+            {
+                ID = roughProductDetails.ID,
+                Name = roughProductDetails.Name,
+                CostPerQuantityNeeded = roughProductDetails.CostPerQuantityNeeded,
+                CostPerQuantityToBuy = roughProductDetails.CostPerQuantityToBuy,
+                CostPerRemainQuantity = roughProductDetails.CostPerRemainQuantity,
+                QuantityNeeded = roughProductDetails.QuantityNeeded,
+                QuantityToBuy = roughProductDetails.QuantityToBuy,
+                RemainQuantity = roughProductDetails.RemainQuantity
             };
         }
     }

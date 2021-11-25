@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { Observable, BehaviorSubject } from "rxjs";
 import { ApiHttpClient } from "./api-http-client.service";
-import { ProjectCollectionConfiguration, ProjectConfiguration, RoughProductConfiguration, FiniteProductConfiguration } from "../models/project-configuration.model";
+import { ProjectCollectionConfiguration, ProjectConfiguration, RoughProductConfiguration, FiniteProductConfiguration, ProjectConfigurationDetails } from "../models/project-configuration.model";
 
 @Injectable()
 export class ProjectCollectionConfigService {
@@ -25,6 +25,13 @@ export class ProjectCollectionConfigService {
 
     projectSelected(projectID: string) {
         this.projectID.next(projectID);
+    }
+
+    detailProjectConfigurationDetails(projectID: string): Observable<ProjectConfigurationDetails> {
+        const formData: FormData = new FormData();
+        formData.append("projectID", projectID);
+
+        return this.httpClient.post<ProjectConfigurationDetails>('ProjectConfiguration/DetailProjectConfigurationDetails', formData)
     }
 
     listAllProjectCollections(): Observable<ProjectCollectionConfiguration[]> {
@@ -96,10 +103,21 @@ export class ProjectCollectionConfigService {
         return this.httpClient.post('ProjectConfiguration/DeleteRoughProductConfiguration', formData);
     }
 
+    deleteRoughProductCollectionConfiguration(id: string) {
+        const formData: FormData = new FormData();
+        formData.append("id", id);
+
+        return this.httpClient.post('ProjectConfiguration/DeleteRoughProductCollectionConfiguration', formData);
+    }
+
     deleteFiniteProductConfiguration(id: string) {
         const formData: FormData = new FormData();
         formData.append("id", id);
 
         return this.httpClient.post('ProjectConfiguration/DeleteFiniteProductConfiguration', formData);
+    }
+
+    calculateFiniteProductCosts(finiteProductConfiguration: FiniteProductConfiguration): Observable<FiniteProductConfiguration> {
+        return this.httpClient.post('ProjectConfiguration/CalculateFiniteProductCosts', finiteProductConfiguration);
     }
 }

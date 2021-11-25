@@ -1,8 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatAccordion } from '@angular/material/expansion';
+import { forkJoin } from 'rxjs';
 
-import { ProjectConfiguration } from '../core/models/project-configuration.model';
+import { ProjectConfiguration, RoughProductConfiguration, UnitOfMeasure } from '../core/models/project-configuration.model';
 import { Guid } from '../core/services/guid.service';
 import { ProjectCollectionConfigService } from '../core/services/project-collection-config.service';
 
@@ -12,14 +14,22 @@ import { ProjectCollectionConfigService } from '../core/services/project-collect
     styleUrls: ['./project-config.component.scss']
 })
 export class ProjectConfigComponent implements OnInit {
+    @ViewChild(MatAccordion) accordion: MatAccordion;
     @ViewChild('formDirective') private formDirective: NgForm;
+    @ViewChild('roughProductFormDirective') private roughProductFormDirective: NgForm;
 
     isLoaded = false;
+    projectCollectionID: string;
     projects: ProjectConfiguration[];
     projectForm: FormGroup;
     updatedProjectConfiguration: ProjectConfiguration;
-
-    private projectCollectionID: string;
+    projectRoughProductConfigurations: RoughProductConfiguration[];
+    roughProductFormGroup: FormGroup;
+    updatedRoughProductConfiguration: RoughProductConfiguration;
+    unitOfMeasureValues: string[];
+    expandCollectionProjects: boolean;
+    expandRoughProducts: boolean;
+    unitOfMeasures = UnitOfMeasure;
 
     constructor(
         private router: Router,
@@ -32,6 +42,10 @@ export class ProjectConfigComponent implements OnInit {
 
         this.projectCollectionConfigService.projectCollectionSelected(this.projectCollectionID);
 
+        this.unitOfMeasureValues = Object.keys(this.unitOfMeasures).filter(k => !isNaN(Number(k)));
+        this.expandCollectionProjects = true;
+        this.expandRoughProducts = false;
+
         this.loadConfiguration();
     }
 
@@ -41,12 +55,15 @@ export class ProjectConfigComponent implements OnInit {
 
         const projectConfiguration: ProjectConfiguration = {
             id: this.updatedProjectConfiguration ? this.updatedProjectConfiguration.id : Guid.newGuid(),
-            projectCollectionID: this.projectForm.get('projectCollectionID').value,
+            projectCollectionID: this.projectCollectionID,
             name: this.projectForm.get('name').value,
             description: this.projectForm.get('description').value
         };
 
         this.projectCollectionConfigService.updateProject(projectConfiguration).subscribe(() => {
+            this.expandRoughProducts = false;
+            this.expandCollectionProjects = true;
+
             this.loadConfiguration();
         });
     }
@@ -58,12 +75,9 @@ export class ProjectConfigComponent implements OnInit {
     editProject(project: ProjectConfiguration) {
         this.updatedProjectConfiguration = project;
 
-        this.projectForm = new FormGroup({
-            projectCollectionID: new FormControl({ value: project.projectCollectionID, disabled: true }, Validators.required),
-            name: new FormControl(project.name, Validators.required),
-            description: new FormControl(project.description),
-        });
+        this.initProjectForm();
     }
+
 
     deleteProject(project: ProjectConfiguration) {
         this.projectCollectionConfigService.deleteProject(project.id).subscribe(() => {
@@ -71,22 +85,78 @@ export class ProjectConfigComponent implements OnInit {
         });
     }
 
-    private initForm() {
+    editRoughProductAtProject(roughProductConfiguration: RoughProductConfiguration) {
+        this.updatedRoughProductConfiguration = roughProductConfiguration;
+
+        this.initRoughProductForm();
+    }
+
+    deleteRoughProductAtProject(roughProductConfiguration: RoughProductConfiguration) {
+        this.projectCollectionConfigService.deleteRoughProductCollectionConfiguration(roughProductConfiguration.id).subscribe(() => {
+            this.loadConfiguration();
+        });
+    }
+
+    updateRoughProduct() {
+        if (!this.roughProductFormGroup.valid)
+            return;
+
+        const roughProductConfiguration: RoughProductConfiguration = {
+            id: this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.id : Guid.newGuid(),
+            name: this.roughProductFormGroup.get('name').value,
+            description: this.roughProductFormGroup.get('description').value,
+            quantity: this.roughProductFormGroup.get('quantity').value,
+            unitOfMeasure: Number(this.roughProductFormGroup.get('unitOfMeasure').value),
+            cost: this.roughProductFormGroup.get('cost').value,
+            effectiveDate: new Date(),
+            projectID: null,
+            importedID: null,
+            projectCollectionID: this.projectCollectionID,
+        };
+
+        this.projectCollectionConfigService.updateRoughProductConfiguration(roughProductConfiguration).subscribe(() => {
+            this.loadConfiguration();
+            this.expandRoughProducts = true;
+            this.expandCollectionProjects = false;
+        });
+    }
+
+    private initProjectForm() {
         this.projectForm = new FormGroup({
-            projectCollectionID: new FormControl({ value: this.projectCollectionID, disabled: true }, Validators.required),
-            name: new FormControl('', Validators.required),
-            description: new FormControl(''),
+            name: new FormControl(this.updatedProjectConfiguration ? this.updatedProjectConfiguration.name : '', Validators.required),
+            description: new FormControl(this.updatedProjectConfiguration ? this.updatedProjectConfiguration.description : ''),
         });
 
         if (this.formDirective)
             this.formDirective.resetForm();
     }
 
+    private initRoughProductForm() {
+        this.roughProductFormGroup = new FormGroup({
+            name: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.name : '', Validators.required),
+            description: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.description : ''),
+            quantity: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.quantity : '', Validators.required),
+            unitOfMeasure: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.unitOfMeasure : '', Validators.required),
+            cost: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.cost : '', Validators.required),
+        });
+
+        if (this.roughProductFormDirective) {
+            this.roughProductFormDirective.resetForm();
+        }
+    }
+
     private loadConfiguration() {
-        this.projectCollectionConfigService.listAllProjects(this.projectCollectionID).subscribe((projects: ProjectConfiguration[]) => {
-            this.projects = projects;
+        forkJoin(
+            this.projectCollectionConfigService.listAllProjects(this.projectCollectionID),
+            this.projectCollectionConfigService.listAllRoughProductConfigurationsByCollection(this.projectCollectionID)
+        ).subscribe((response: [ProjectConfiguration[], RoughProductConfiguration[]]) => {
+            this.projects = response[0];
+            this.projectRoughProductConfigurations = response[1];
+
             this.updatedProjectConfiguration = null;
-            this.initForm();
+            this.updatedRoughProductConfiguration = null;
+            this.initProjectForm();
+            this.initRoughProductForm();
 
             this.isLoaded = true;
         });

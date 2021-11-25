@@ -1,124 +1,230 @@
-.accordion-action-buttons {
-  margin-top: 48px;
-  margin-bottom: 12px;
-}
+.project-container {
+  padding-bottom: 48px;
 
-.accordion-container {
-  .accordion-description {
-    display: flex;
-    justify-content: end;
+  .accordion-action-buttons {
+    margin-top: 48px;
+    margin-bottom: 12px;
   }
 
-  .rough-products-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+  .accordion-container {
 
-    .rough-product-container {
-      max-width: 300px;
+    .accordion-description {
+      display: flex;
+      justify-content: end;
+    }
+
+    .project-description-container {
       margin: 8px;
 
-      .rough-product-header {
+      .project-description-header {
         background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
         background-size: cover;
       }
     }
-  }
 
-  .add-new-rough-product-card {
-    .form-field {
-      margin: 8px;
-    }
-
-    .form-field-check-box {
-      margin-left: 8px;
-      margin-top: 16px;
-    }
-
-    .add-new-rough-product-header {
-      background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-      background-size: cover;
-    }
-
-    .add-new-rough-product-form {
+    .rough-products-container {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      flex-wrap: wrap;
 
-      .price-details {
-        display: flex;
-        justify-content: space-between;
+      .rough-product-container {
+        max-width: 300px;
+        margin: 8px;
 
-        .quantity, .price {
-          flex: 1;
+        .rough-product-header {
+          background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+          background-size: cover;
+        }
+
+        .delete-button {
+          margin-left: 16px;
         }
       }
-
-      .add-button {
-        margin-top: 32px;
-        width: 50%;
-        align-self: end;
-      }
     }
-  }
 
-  .finite-products-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    .add-new-rough-product-card {
+      .form-field {
+        margin: 8px;
+      }
 
-    .finite-product-container {
-      max-width: 300px;
-      margin: 8px;
+      .form-field-check-box {
+        margin-left: 8px;
+        margin-top: 16px;
+      }
 
-      .rough-product-header {
+      .add-new-rough-product-header {
         background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
         background-size: cover;
       }
-    }
-  }
 
-  .add-rough-product {
-    display: flex;
-    align-items: center;
-
-    .import-rough-product {
-      flex-grow: 1;
-      margin-right: 24px;
-    }
-  }
-
-  .add-new-finite-product-card {
-    .form-field {
-      margin: 8px;
-    }
-
-    .form-field-check-box {
-      margin-left: 8px;
-      margin-top: 16px;
-    }
-
-    .add-new-finite-product-header {
-      background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-      background-size: cover;
-    }
-
-    .add-new-finite-product-form {
-      display: flex;
-      flex-direction: column;
-
-      .price-details {
+      .add-new-rough-product-form {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
 
-        .quantity, .price {
-          flex: 1;
+        .price-details {
+          display: flex;
+          justify-content: space-between;
+
+          .quantity, .price {
+            flex: 1;
+          }
+        }
+
+        .add-button {
+          margin-top: 32px;
+          width: 50%;
+          align-self: end;
         }
       }
+    }
 
-      .add-button {
-        margin-top: 32px;
-        width: 50%;
-        align-self: end;
+    .add-rough-product {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+
+      .import-rough-product {
+        flex-grow: 1;
+        margin-right: 24px;
+      }
+
+      .quantity {
+        flex-grow: 0;
+      }
+    }
+
+    .finite-products-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      .finite-product-container {
+        max-width: 300px;
+        margin: 8px;
+
+        .finite-product-header {
+          background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+          background-size: cover;
+        }
+
+        .finite-product-content {
+          margin-top: 20px;
+          margin-bottom: 32px;
+        }
+
+        .delete-button {
+          margin-left: 16px;
+        }
+      }
+    }
+
+    .add-new-finite-product-card {
+      .form-field {
+        margin: 8px;
+      }
+
+      .form-field-check-box {
+        margin-left: 8px;
+        margin-top: 16px;
+      }
+
+      .add-new-finite-product-header {
+        background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+        background-size: cover;
+      }
+
+      .add-new-finite-product-form {
+        display: flex;
+        flex-direction: column;
+
+        .price-details {
+          display: flex;
+          justify-content: space-between;
+
+          .quantity, .price {
+            flex: 1;
+          }
+        }
+
+        .product-details-form {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin: 12px 0px;
+        }
+
+        .product-total-cost {
+          display: flex;
+          justify-content: end;
+          align-items: center;
+        }
+
+        .actions-buttons {
+          display: flex;
+          width: 50%;
+          align-self: end;
+          justify-content: end;
+          margin-top: 12px;
+
+          .add-button {
+            margin-left: 12px;
+          }
+        }
+      }
+    }
+
+    .project-details-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      .project-details-card-container {
+        flex-grow: 1;
+        margin: 8px;
+
+        .project-details-header {
+          background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+          background-size: cover;
+        }
+
+        .buttons-container {
+          margin: 12px 0px;
+
+          .add-column-button {
+            margin-right: 16px;
+          }
+        }
+
+        .card-content {
+          margin-top: 20px;
+        }
+
+        table {
+          th {
+            padding: 0px 12px;
+          }
+
+          td {
+            padding: 0px 12px;
+
+            &:not(:first-child) {
+              text-align: center;
+            }
+          }
+        }
+
+        .finite-product-name {
+          margin-top: 16px;
+          font-weight: 700;
+        }
+
+        .product-details-list {
+          margin-top: 16px;
+
+          span:first-child {
+            margin-right: 8px;
+          }
+        }
       }
     }
   }

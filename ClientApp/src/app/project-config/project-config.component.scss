@@ -1,37 +1,52 @@
-.projects-container {
-  display: flex;
-  justify-content: space-between;
+.accordion-action-buttons {
+  margin-top: 48px;
+  margin-bottom: 12px;
+}
 
-  .view-project-container {
-    flex: 1;
-    margin-right: 48px;
+.accordion-container {
+  .accordion-description {
+    display: flex;
+    justify-content: end;
+  }
 
-    .view-title {
-      margin-bottom: 20px;
-    }
+  .projects-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 
-    .project-details {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 48px;
+    .project-container {
+      max-width: 300px;
+      margin: 8px;
+
+      .project-header {
+        background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+        background-size: cover;
+      }
+
+      .project-description {
+        height: 60px;
+        overflow: hidden;
+      }
 
       .action-button-container {
         display: flex;
+        justify-content: space-between;
 
-        .action-button {
+        .edit-button {
           margin-left: 16px;
         }
       }
     }
   }
 
-  .update-project-container {
-    flex: 1;
-    margin-left: 48px;
+  .add-new-project-card {
+    .form-field {
+      margin: 8px;
+    }
 
-    .add-title {
-      margin-bottom: 20px;
+    .add-new-project-header {
+      background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+      background-size: cover;
     }
 
     .update-project-form {
@@ -40,6 +55,70 @@
 
       .form-field {
         margin-bottom: 8px;
+      }
+
+      .project-description {
+        line-height: 5;
+      }
+
+      .add-button {
+        margin-top: 32px;
+        width: 50%;
+        align-self: end;
+      }
+    }
+  }
+
+  .rough-products-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .rough-product-container {
+      max-width: 300px;
+      margin: 8px;
+
+      .rough-product-header {
+        background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+        background-size: cover;
+      }
+
+      .rough-product-description {
+        height: 40px;
+        overflow: hidden;
+      }
+
+      .delete-button {
+        margin-left: 16px;
+      }
+    }
+  }
+
+  .add-new-rough-product-card {
+    .form-field {
+      margin: 8px;
+    }
+
+    .add-new-rough-product-header {
+      background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+      background-size: cover;
+    }
+
+    .add-new-rough-product-form {
+      display: flex;
+      flex-direction: column;
+
+      .price-details {
+        display: flex;
+        justify-content: space-between;
+
+        .quantity, .price {
+          flex: 1;
+        }
+      }
+
+      .rough-product-description {
+        line-height: 3;
       }
 
       .add-button {

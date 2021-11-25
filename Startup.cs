@@ -97,7 +97,7 @@ namespace CorrectPrice
             IFiniteProductConfigResource finiteProductConfigResource = new Core.Resource.FiniteProductConfigResource();
 
             Core.Contract.Configuration.IProjectCollectionConfigManager projectCollectionConfigManager = new Core.Manager.Configuration.ProjectCollectionConfigManager(projectCollectionConfigResource);
-            Core.Contract.Configuration.IProjectConfigManager projectConfigManager = new Core.Manager.Configuration.ProjectConfigManager(projectConfigResource);
+            Core.Contract.Configuration.IProjectConfigManager projectConfigManager = new Core.Manager.Configuration.ProjectConfigManager(projectConfigResource, finiteProductConfigResource, roughProductConfigurationResource);
             Core.Contract.Configuration.IRoughProductConfigManager roughProductConfigManager = new Core.Manager.Configuration.RoughProductConfigManager(roughProductConfigurationResource);
             Core.Contract.Configuration.IFiniteProductConfigManager finiteProductConfigManager = new Core.Manager.Configuration.FiniteProductConfigManager(priceCalculatorEngine, finiteProductConfigResource, roughProductConfigurationResource);
 

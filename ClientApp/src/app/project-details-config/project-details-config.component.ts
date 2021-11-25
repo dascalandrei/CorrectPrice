@@ -5,7 +5,7 @@ import { FormGroup, FormControl, Validators, NgForm, FormArray } from '@angular/
 import { Guid } from '../core/services/guid.service';
 import { forkJoin } from 'rxjs';
 
-import { RoughProductConfiguration, UnitOfMeasure, FiniteProductConfiguration, ProductDetails } from '../core/models/project-configuration.model';
+import { RoughProductConfiguration, UnitOfMeasure, FiniteProductConfiguration, ProductDetails, ProjectConfiguration, ProjectConfigurationDetails } from '../core/models/project-configuration.model';
 import { ProjectCollectionConfigService } from '../core/services/project-collection-config.service';
 
 @Component({
@@ -18,6 +18,9 @@ export class ProjectDetailsConfigComponent implements OnInit {
     @ViewChild('roughProductformDirective') private roughProductFormDirective: NgForm;
     @ViewChild('finiteProductformDirective') private finiteProductFormDirective: NgForm;
 
+    isLoaded: boolean;
+    projectConfiguration: ProjectConfiguration;
+    projectDetails: ProjectConfigurationDetails;
     collectionRoughProductConfigurations: RoughProductConfiguration[];
     projectRoughProductConfigurations: RoughProductConfiguration[];
     projectFiniteProductConfigurations: FiniteProductConfiguration[];
@@ -29,7 +32,13 @@ export class ProjectDetailsConfigComponent implements OnInit {
     expandRoughCollectionProducts: boolean;
     updatedRoughProductConfiguration: RoughProductConfiguration;
     updatedFiniteProductConfiguration: FiniteProductConfiguration;
+    isProductImported: Map<string, boolean> = new Map<string, boolean>();
+    isCostCalculatedForFiniteProduct: boolean;
     unitOfMeasures = UnitOfMeasure;
+    displayedColumns1Map: Map<string, string> = new Map<string, string>();
+    displayedColumns1: string[] = ['name', 'quantityToBuy', 'quantityNeeded', 'remainQuantity'];
+    displayedColumns2: string[] = ['name', 'quantityToBuy', 'costPerQuantityToBuy', 'quantityNeeded', 'costPerQuantityNeeded', 'remainQuantity', 'costPerRemainQuantity'];
+    columns1ToDisplay: string[];
 
     private projectCollectionID: string;
     private projectID: string;
@@ -47,19 +56,30 @@ export class ProjectDetailsConfigComponent implements OnInit {
         this.projectCollectionConfigService.projectSelected(this.projectID);
 
         this.expandFinalProducts = true;
+        this.expandRoughProducts = false;
+        this.expandRoughCollectionProducts = false;
         this.unitOfMeasureValues = Object.keys(this.unitOfMeasures).filter(k => !isNaN(Number(k)));
+
+        this.columns1ToDisplay = this.displayedColumns1.slice();
+        this.displayedColumns1Map.set('name', 'Nume produs');
+        this.displayedColumns1Map.set('quantityToBuy', 'Cantitatea de cumparat');
+        this.displayedColumns1Map.set('quantityNeeded', 'Cantitatea necesara');
+        this.displayedColumns1Map.set('remainQuantity', 'Cantitatea ramasa');
 
         this.loadConfiguration();
     }
 
     importRoughProductAtProject(roughProductConfiguration: RoughProductConfiguration) {
+        roughProductConfiguration.importedID = roughProductConfiguration.id;
+        roughProductConfiguration.id = Guid.newGuid();
+        roughProductConfiguration.projectCollectionID = null;
         roughProductConfiguration.projectID = this.projectID;
 
         this.projectCollectionConfigService.updateRoughProductConfiguration(roughProductConfiguration).subscribe(() => {
             this.loadConfiguration();
             this.expandFinalProducts = false;
-            this.expandRoughProducts = false;
-            this.expandRoughCollectionProducts = true;
+            this.expandRoughProducts = true;
+            this.expandRoughCollectionProducts = false;
         });
     }
 
@@ -84,7 +104,8 @@ export class ProjectDetailsConfigComponent implements OnInit {
             cost: this.roughProductFormGroup.get('cost').value,
             effectiveDate: new Date(),
             projectID: this.projectID,
-            projectCollectionID: includeInCollection ? this.projectCollectionID : null
+            projectCollectionID: includeInCollection ? this.projectCollectionID : null,
+            importedID: this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.importedID : null,
         };
 
         this.projectCollectionConfigService.updateRoughProductConfiguration(roughProductConfiguration).subscribe(() => {
@@ -96,25 +117,70 @@ export class ProjectDetailsConfigComponent implements OnInit {
         });
     }
 
+    deleteRoughProductAtProject(roughProductConfiguration: RoughProductConfiguration) {
+        this.projectCollectionConfigService.deleteRoughProductConfiguration(roughProductConfiguration.id).subscribe(() => {
+            this.loadConfiguration();
+        });
+    }
+
     editFiniteProductAtProject(finiteProductConfiguration: FiniteProductConfiguration) {
         this.updatedFiniteProductConfiguration = finiteProductConfiguration;
 
         this.initFiniteProductForm();
     }
 
-    addNewRoughProductToAFiniteProduct(finiteProductForm: FormGroup, roughProductID: string) {
-        const roughProductConfiguration: RoughProductConfiguration = this.projectRoughProductConfigurations.find(product => product.id === roughProductID);
-
-        (finiteProductForm.get('productDetails') as FormArray).push(new FormGroup({
-            id: new FormControl({ value: roughProductConfiguration.id, hidden: true }),
-            name: new FormControl({ value: roughProductConfiguration.name, disabled: true }),
+    addNewRoughProductToAFiniteProduct() {
+        (this.finiteProductFormGroup.controls.productDetails as FormArray).push(new FormGroup({
+            id: new FormControl('', Validators.required),
+            name: new FormControl({ value: '', disabled: true }),
             quantity: new FormControl('', Validators.required),
             cost: new FormControl({ value: '', disabled: true })
         }));
+
+        this.isCostCalculatedForFiniteProduct = false;
     }
 
-    deleteRoughProductFromAFiniteProduct(finiteProductForm: FormGroup, index: number) {
-        (finiteProductForm.get('productDetails') as FormArray).removeAt(index);
+    deleteFiniteProductAtProject(finiteProductConfiguration: FiniteProductConfiguration) {
+        this.projectCollectionConfigService.deleteFiniteProductConfiguration(finiteProductConfiguration.id).subscribe(() => {
+            this.loadConfiguration();
+        });
+    }
+
+    deleteRoughProductFromAFiniteProduct(index: number) {
+        this.isCostCalculatedForFiniteProduct = false;
+        (this.finiteProductFormGroup.controls.productDetails as FormArray).removeAt(index);
+    }
+
+    changeRoughProductDetails() {
+        this.isCostCalculatedForFiniteProduct = false;
+    }
+
+    calculateCostForFiniteProduct() {
+        if (!this.finiteProductFormGroup.valid)
+            return;
+
+        const finiteProductConfiguration: FiniteProductConfiguration = {
+            id: this.updatedFiniteProductConfiguration ? this.updatedFiniteProductConfiguration.id : Guid.newGuid(),
+            projectID: this.projectID,
+            name: this.finiteProductFormGroup.get('name').value,
+            description: this.finiteProductFormGroup.get('description').value,
+            cost: 0,
+            productDetails: (this.finiteProductFormGroup.get('productDetails') as FormArray).controls.map((fb: FormGroup) => {
+                return {
+                    roughProductID: fb.get('id').value,
+                    name: this.projectRoughProductConfigurations.find(x => x.id === fb.get('id').value).name,
+                    quantity: fb.get('quantity').value,
+                    cost: 0
+                } as ProductDetails
+            })
+        };
+
+        this.projectCollectionConfigService.calculateFiniteProductCosts(finiteProductConfiguration).subscribe((finiteProductConfigurationWithCosts: FiniteProductConfiguration) => {
+            this.updatedFiniteProductConfiguration = finiteProductConfigurationWithCosts;
+            this.isCostCalculatedForFiniteProduct = true;
+
+            this.initFiniteProductForm();
+        });
     }
 
     updateFiniteProduct() {
@@ -146,6 +212,42 @@ export class ProjectDetailsConfigComponent implements OnInit {
         });
     }
 
+    addColumn() {
+        if (this.columns1ToDisplay.length < this.displayedColumns1.length)
+            this.columns1ToDisplay.push(this.displayedColumns1[this.columns1ToDisplay.length]);
+    }
+
+    removeColumn() {
+        if (this.columns1ToDisplay.length)
+            this.columns1ToDisplay.pop();
+    }
+
+    private loadConfiguration() {
+        forkJoin(
+            this.projectCollectionConfigService.listAllProjects(this.projectCollectionID),
+            this.projectCollectionConfigService.listAllRoughProductConfigurationsByCollection(this.projectCollectionID),
+            this.projectCollectionConfigService.listAllRoughProductConfigurationsByProject(this.projectID),
+            this.projectCollectionConfigService.listAllFiniteProductConfigurationsByProject(this.projectID),
+            this.projectCollectionConfigService.detailProjectConfigurationDetails(this.projectID)
+        ).subscribe((response: [ProjectConfiguration[], RoughProductConfiguration[], RoughProductConfiguration[], FiniteProductConfiguration[], ProjectConfigurationDetails]) => {
+            this.projectConfiguration = response[0].find(x => x.id === this.projectID);
+            this.collectionRoughProductConfigurations = response[1];
+            this.projectRoughProductConfigurations = response[2];
+            this.projectFiniteProductConfigurations = response[3];
+            this.projectDetails = response[4];
+
+            this.initRoughProductForm();
+            this.initFiniteProductForm();
+
+            this.collectionRoughProductConfigurations.forEach((collectionProduct: RoughProductConfiguration) => {
+                const isImported = this.projectRoughProductConfigurations.some(x => x.importedID === collectionProduct.id);
+                this.isProductImported.set(collectionProduct.id, isImported);
+            })
+
+            this.isLoaded = true;
+        });
+    }
+
     private initRoughProductForm() {
         this.roughProductFormGroup = new FormGroup({
             name: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.name : '', Validators.required),
@@ -164,43 +266,37 @@ export class ProjectDetailsConfigComponent implements OnInit {
         this.finiteProductFormGroup = new FormGroup({
             name: new FormControl(this.updatedFiniteProductConfiguration ? this.updatedFiniteProductConfiguration.name : '', Validators.required),
             description: new FormControl(this.updatedFiniteProductConfiguration ? this.updatedFiniteProductConfiguration.description : ''),
-            cost: new FormControl({ value: this.updatedFiniteProductConfiguration ? this.updatedFiniteProductConfiguration.description : '', disabled: true }),
+            cost: new FormControl({ value: this.updatedFiniteProductConfiguration ? this.updatedFiniteProductConfiguration.cost : '', disabled: true }),
             productDetails: new FormArray(this.initProductDetailsFormGroup(), Validators.required)
         });
 
-        if (this.finiteProductFormDirective)
+        if (this.finiteProductFormDirective) {
             this.finiteProductFormDirective.resetForm();
+        }
+
     }
 
     private initProductDetailsFormGroup(): FormGroup[] {
         let formGroups: FormGroup[] = [];
 
-        if (this.updatedRoughProductConfiguration) {
+        if (this.updatedFiniteProductConfiguration) {
             this.updatedFiniteProductConfiguration.productDetails.forEach((productDetail: ProductDetails) => {
                 formGroups.push(new FormGroup({
-                    id: new FormControl({ value: productDetail.roughProductID, hidden: true }),
+                    id: new FormControl(productDetail.roughProductID, Validators.required),
                     name: new FormControl({ value: productDetail.name, disabled: true }),
                     quantity: new FormControl(productDetail.quantity, Validators.required),
                     cost: new FormControl({ value: productDetail.cost, disabled: true })
                 }));
             });
+        } else {
+            formGroups.push(new FormGroup({
+                id: new FormControl('', Validators.required),
+                name: new FormControl({ value: '', disabled: true }),
+                quantity: new FormControl('', Validators.required),
+                cost: new FormControl({ value: '', disabled: true })
+            }));
         }
 
         return formGroups;
-    }
-
-    private loadConfiguration() {
-        forkJoin(
-            this.projectCollectionConfigService.listAllRoughProductConfigurationsByCollection(this.projectCollectionID),
-            this.projectCollectionConfigService.listAllRoughProductConfigurationsByProject(this.projectID),
-            this.projectCollectionConfigService.listAllFiniteProductConfigurationsByProject(this.projectID)
-        ).subscribe((response: [RoughProductConfiguration[], RoughProductConfiguration[], FiniteProductConfiguration[]]) => {
-            this.collectionRoughProductConfigurations = response[0];
-            this.projectRoughProductConfigurations = response[1];
-            this.projectFiniteProductConfigurations = response[2];
-
-            this.initRoughProductForm();
-            this.initFiniteProductForm();
-        });
     }
 }

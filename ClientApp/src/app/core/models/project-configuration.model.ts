@@ -16,6 +16,7 @@ export interface RoughProductConfiguration {
     id: string;
     projectCollectionID: string;
     projectID: string;
+    importedID: string;
     effectiveDate: Date,
     name: string;
     description: string;
@@ -45,4 +46,24 @@ export interface ProductDetails {
     name: string;
     cost: number;
     quantity: number;
+}
+
+export interface ProjectConfigurationDetails {
+    id: string;
+    projectCollectionID: string;
+    roughProductDetails: RoughProductDetails[];
+    totalCostPerQuantityNeeded: number;
+    totalCostPerQuantityToBuy: number;
+    totalCostPerRemainQuantity: number;
+}
+
+export interface RoughProductDetails {
+    id: string;
+    name: string;
+    quantityNeeded: number;
+    quantityToBuy: number;
+    remainQuantity: number;
+    costPerQuantityNeeded: number;
+    costPerQuantityToBuy: number;
+    costPerRemainQuantity: number;
 }
