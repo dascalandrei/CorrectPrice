@@ -20,12 +20,12 @@ export class NavMenuComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-
         this.collectionSelected = this.projectCollectionConfigService.projectCollectionIDObservable.subscribe((collectionID: string) => {
             this.collectionID = collectionID;
         });
 
         this.projectSelected = this.projectCollectionConfigService.projectIDObservable.subscribe((projectID: string) => {
+            console.log(projectID);
             this.projectID = projectID;
         });
     }

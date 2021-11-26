@@ -1,5 +1,5 @@
-<ng-container *ngIf="isLoaded">
-  <h3>Lista proiecte si produsele brute pentru colectia: {{projectCollectionID}}</h3>
+<div class="project-config-container" *ngIf="isLoaded">
+  <h3>Lista proiecte si produsele brute pentru colectia: {{projectCollection.name}}</h3>
   <div class="accordion-action-buttons">
     <button mat-button (click)="accordion.openAll()">Expandeaza tot</button>
     <button mat-button (click)="accordion.closeAll()">Colapseaza tot</button>
@@ -18,7 +18,14 @@
         <mat-card *ngFor="let project of projects" class="project-container">
           <mat-card-header>
             <div mat-card-avatar class="project-header"></div>
-            <mat-card-title>{{project.name}}</mat-card-title>
+              <div class="project-title-container" *ngIf="!project.closeDate">
+                <mat-card-title>{{project.name}}</mat-card-title>
+                <mat-card-subtitle><span class="project-open">Proiect deschis</span></mat-card-subtitle>
+              </div>
+              <div class="project-title-container" *ngIf="project.closeDate">
+                <mat-card-title><span>{{project.name}}</span></mat-card-title>
+                <mat-card-subtitle><span class="project-closed">PROIECT INCHIS</span></mat-card-subtitle>
+              </div>
           </mat-card-header>
           <mat-card-content>
             <p class="project-description" matTooltip="{{project.description}}">
@@ -134,4 +141,4 @@
       </mat-card>
     </mat-expansion-panel>
   </mat-accordion>
-</ng-container>
+</div>

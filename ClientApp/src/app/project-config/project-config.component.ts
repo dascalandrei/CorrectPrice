@@ -4,7 +4,7 @@ import { NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatAccordion } from '@angular/material/expansion';
 import { forkJoin } from 'rxjs';
 
-import { ProjectConfiguration, RoughProductConfiguration, UnitOfMeasure } from '../core/models/project-configuration.model';
+import { ProjectConfiguration, RoughProductConfiguration, UnitOfMeasure, ProjectCollectionConfiguration } from '../core/models/project-configuration.model';
 import { Guid } from '../core/services/guid.service';
 import { ProjectCollectionConfigService } from '../core/services/project-collection-config.service';
 
@@ -20,6 +20,7 @@ export class ProjectConfigComponent implements OnInit {
 
     isLoaded = false;
     projectCollectionID: string;
+    projectCollection: ProjectCollectionConfiguration;
     projects: ProjectConfiguration[];
     projectForm: FormGroup;
     updatedProjectConfiguration: ProjectConfiguration;
@@ -40,6 +41,9 @@ export class ProjectConfigComponent implements OnInit {
     ngOnInit() {
         this.projectCollectionID = this.route.snapshot.paramMap.get('id');
 
+        if (this.projectCollectionID != this.projectCollectionConfigService.getCurrentCollectionID())
+            this.projectCollectionConfigService.projectSelected(null);
+
         this.projectCollectionConfigService.projectCollectionSelected(this.projectCollectionID);
 
         this.unitOfMeasureValues = Object.keys(this.unitOfMeasures).filter(k => !isNaN(Number(k)));
@@ -57,7 +61,8 @@ export class ProjectConfigComponent implements OnInit {
             id: this.updatedProjectConfiguration ? this.updatedProjectConfiguration.id : Guid.newGuid(),
             projectCollectionID: this.projectCollectionID,
             name: this.projectForm.get('name').value,
-            description: this.projectForm.get('description').value
+            description: this.projectForm.get('description').value,
+            closeDate: null
         };
 
         this.projectCollectionConfigService.updateProject(projectConfiguration).subscribe(() => {
@@ -147,11 +152,17 @@ export class ProjectConfigComponent implements OnInit {
 
     private loadConfiguration() {
         forkJoin(
+            this.projectCollectionConfigService.detailProjectCollection(this.projectCollectionID),
             this.projectCollectionConfigService.listAllProjects(this.projectCollectionID),
             this.projectCollectionConfigService.listAllRoughProductConfigurationsByCollection(this.projectCollectionID)
-        ).subscribe((response: [ProjectConfiguration[], RoughProductConfiguration[]]) => {
-            this.projects = response[0];
-            this.projectRoughProductConfigurations = response[1];
+        ).subscribe((response: [ProjectCollectionConfiguration, ProjectConfiguration[], RoughProductConfiguration[]]) => {
+            this.projectCollection = response[0];
+            this.projects = response[1];
+            this.projectRoughProductConfigurations = response[2];
+
+            this.projects.forEach((x: ProjectConfiguration) => {
+                console.log(x.closeDate);
+            });
 
             this.updatedProjectConfiguration = null;
             this.updatedRoughProductConfiguration = null;

@@ -10,6 +10,7 @@ export interface ProjectConfiguration {
     projectCollectionID: string;
     name: string;
     description: string;
+    closeDate: Date;
 }
 
 export interface RoughProductConfiguration {
@@ -66,4 +67,40 @@ export interface RoughProductDetails {
     costPerQuantityNeeded: number;
     costPerQuantityToBuy: number;
     costPerRemainQuantity: number;
+}
+
+export interface EarningsItem {
+    id: string;
+    details: string;
+    date: Date;
+    cost: number;
+    projectID?: string;
+    projectCollectionID?: string;
+    clientID: number;
+    costPerRemainQuantity: number;
+}
+
+export interface InvestmentItem {
+    id: string;
+    name: string;
+    description: string;
+    date: Date;
+    cost: number;
+    projectID?: string;
+    projectCollectionID?: string;
+    clientID: number;
+    costPerRemainQuantity: number;
+}
+
+export interface CashFlowData {
+    cashFlowDataByMonth: CashFlowDataByMonth[];
+}
+
+export interface CashFlowDataByMonth {
+    startDate: Date;
+    endDate: Date;
+    name: string;
+    earningsItems: EarningsItem[];
+    investmentItems: InvestmentItem[];
+    cashFlow: number;
 }

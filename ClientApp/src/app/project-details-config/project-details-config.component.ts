@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatAccordion } from '@angular/material/expansion';
 import { FormGroup, FormControl, Validators, NgForm, FormArray } from '@angular/forms';
 import { Guid } from '../core/services/guid.service';
@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 
 import { RoughProductConfiguration, UnitOfMeasure, FiniteProductConfiguration, ProductDetails, ProjectConfiguration, ProjectConfigurationDetails } from '../core/models/project-configuration.model';
 import { ProjectCollectionConfigService } from '../core/services/project-collection-config.service';
+import { MatDatepickerInputEvent, MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
     selector: 'project-details-config',
@@ -35,6 +36,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
     isProductImported: Map<string, boolean> = new Map<string, boolean>();
     isCostCalculatedForFiniteProduct: boolean;
     unitOfMeasures = UnitOfMeasure;
+    closingDate: Date;
     displayedColumns1Map: Map<string, string> = new Map<string, string>();
     displayedColumns1: string[] = ['name', 'quantityToBuy', 'quantityNeeded', 'remainQuantity'];
     displayedColumns2: string[] = ['name', 'quantityToBuy', 'costPerQuantityToBuy', 'quantityNeeded', 'costPerQuantityNeeded', 'remainQuantity', 'costPerRemainQuantity'];
@@ -44,6 +46,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
     private projectID: string;
 
     constructor(
+        private router: Router,
         private route: ActivatedRoute,
         private projectCollectionConfigService: ProjectCollectionConfigService) {
     }
@@ -220,6 +223,16 @@ export class ProjectDetailsConfigComponent implements OnInit {
     removeColumn() {
         if (this.columns1ToDisplay.length)
             this.columns1ToDisplay.pop();
+    }
+
+    changeClosingDate(event: MatDatepickerInputEvent<Date>) {
+        this.closingDate = event.value;
+    }
+
+    closeProject() {
+        this.projectCollectionConfigService.closeProject(this.projectID, this.closingDate).subscribe(() => {
+            this.router.navigate(['/project-collection', this.projectCollectionID]);
+        });
     }
 
     private loadConfiguration() {

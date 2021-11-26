@@ -22,3 +22,7 @@ a.disabled {
   cursor: default;
   color: lightgrey !important;
 }
+
+.nav-link {
+  cursor: pointer;
+}

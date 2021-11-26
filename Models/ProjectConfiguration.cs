@@ -11,5 +11,7 @@ namespace CorrectPrice.Client.Models
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public DateTime? CloseDate { get; set; }
     }
 }

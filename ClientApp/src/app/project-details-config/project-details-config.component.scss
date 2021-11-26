@@ -228,4 +228,19 @@
       }
     }
   }
+
+  .closing-project-container {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-top: 16px;
+
+    .closing-project-datepicker{
+      margin-right: 12px;
+
+      input {
+        border-bottom-style: solid;
+      }
+    }
+  }
 }

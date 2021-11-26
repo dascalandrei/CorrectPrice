@@ -14,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { ApiHttpClient } from './core/services/api-http-client.service';
 import { Guid } from './core/services/guid.service';
@@ -52,6 +53,7 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
         MatCheckboxModule,
         MatTooltipModule,
         MatTableModule,
+        MatNativeDateModule,
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },
             { path: 'client-projects-collection', component: ProjectCollectionConfigComponent },
