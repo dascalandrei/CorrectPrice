@@ -95,16 +95,25 @@ namespace CorrectPrice
             IProjectConfigResource projectConfigResource = new Core.Resource.ProjectConfigResource();
             IRoughProductConfigurationResource roughProductConfigurationResource = new Core.Resource.RoughProductConfigurationResource();
             IFiniteProductConfigResource finiteProductConfigResource = new Core.Resource.FiniteProductConfigResource();
+            IEarningsResource earningsResource = new Core.Resource.EarningsResource();
+            IInvestmentsResource investmentsResource = new Core.Resource.InvestmentsResource();
+
+            ILoginResource loginResource = new Core.Resource.LoginResource();
 
             Core.Contract.Configuration.IProjectCollectionConfigManager projectCollectionConfigManager = new Core.Manager.Configuration.ProjectCollectionConfigManager(projectCollectionConfigResource);
-            Core.Contract.Configuration.IProjectConfigManager projectConfigManager = new Core.Manager.Configuration.ProjectConfigManager(projectConfigResource, finiteProductConfigResource, roughProductConfigurationResource);
+            Core.Contract.Configuration.IProjectConfigManager projectConfigManager = new Core.Manager.Configuration.ProjectConfigManager(projectConfigResource, projectCollectionConfigResource, finiteProductConfigResource, roughProductConfigurationResource, investmentsResource, earningsResource);
             Core.Contract.Configuration.IRoughProductConfigManager roughProductConfigManager = new Core.Manager.Configuration.RoughProductConfigManager(roughProductConfigurationResource);
             Core.Contract.Configuration.IFiniteProductConfigManager finiteProductConfigManager = new Core.Manager.Configuration.FiniteProductConfigManager(priceCalculatorEngine, finiteProductConfigResource, roughProductConfigurationResource);
+            Core.Contract.Configuration.IFinanceManager financeManager = new Core.Manager.Configuration.FinanceManager(earningsResource, investmentsResource);
+
+            Core.Contract.Login.ILoginManager loginManager = new Core.Manager.Login.LoginManager(loginResource);
 
             dependencyInjection.Add("Core.Contract.Configuration.IProjectCollectionConfigManager", projectCollectionConfigManager);
             dependencyInjection.Add("Core.Contract.Configuration.IProjectConfigManager", projectConfigManager);
             dependencyInjection.Add("Core.Contract.Configuration.IRoughProductConfigManager", roughProductConfigManager);
             dependencyInjection.Add("Core.Contract.Configuration.IFiniteProductConfigManager", finiteProductConfigManager);
+            dependencyInjection.Add("Core.Contract.Configuration.IFinanceManager", financeManager);
+            dependencyInjection.Add("Core.Contract.Login.ILoginManager", loginManager);
         }
     }
 }

@@ -5,6 +5,8 @@ namespace CorrectPrice.Client.Models
     public class CashFlowData
     {
         public CashFlowDataByMonth[] CashFlowDataByMonth { get; set; }
+
+        public decimal CashFlow { get; set; }
     }
 
     public class CashFlowDataByMonth

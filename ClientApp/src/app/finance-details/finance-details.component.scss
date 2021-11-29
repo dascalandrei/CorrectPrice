@@ -1,0 +1,210 @@
+.finance-container {
+  padding-bottom: 48px;
+
+  .date-picker-container {
+    .form-field {
+      margin: 8px;
+    }
+  }
+
+  .accordion-action-buttons {
+    margin-top: 48px;
+    margin-bottom: 12px;
+  }
+
+  .accordion-container {
+
+    .accordion-description {
+      display: flex;
+      justify-content: end;
+    }
+  }
+
+  .investments-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .investment-item-container {
+      display: flex;
+      flex-direction: column;
+      min-width: 275px;
+      max-width: 300px;
+      margin: 8px;
+
+      .investment-item-header {
+        background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+        background-size: cover;
+      }
+
+      .investment-content {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .delete-button {
+        margin-left: 16px;
+      }
+    }
+  }
+
+  .add-new-investment-item-card {
+    .form-field {
+      margin: 8px;
+    }
+
+    .details-container {
+      display: flex;
+
+      mat-form-field:first-child {
+        flex-grow: 1;
+      }
+    }
+
+    .buttons-containers {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      margin-top: 32px;
+
+      .add-button {
+        width: 50%;
+        margin-right: 12px;
+      }
+    }
+
+    .form-field-check-box {
+      margin-left: 8px;
+      margin-top: 16px;
+    }
+
+    .add-new-investment-item-header {
+      background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+      background-size: cover;
+    }
+
+    .add-new-investment-item-form {
+      display: flex;
+      flex-direction: column;
+
+      .price-details {
+        display: flex;
+        justify-content: space-between;
+
+        .quantity, .price {
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .earnings-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .earnings-item-container {
+      display: flex;
+      flex-direction: column;
+      min-width: 275px;
+      max-width: 300px;
+      margin: 8px;
+
+      .earnings-item-header {
+        background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+        background-size: cover;
+      }
+
+      .investment-content {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .delete-button {
+        margin-left: 16px;
+      }
+    }
+  }
+
+  .add-new-earnings-item-card {
+    .form-field {
+      margin: 8px;
+    }
+
+    .buttons-containers {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      margin-top: 32px;
+
+      .add-button {
+        width: 50%;
+        margin-right: 12px;
+      }
+    }
+
+    .form-field-check-box {
+      margin-left: 8px;
+      margin-top: 16px;
+    }
+
+    .add-new-earnings-item-header {
+      background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+      background-size: cover;
+    }
+
+    .add-new-earnings-item-form {
+      display: flex;
+      flex-direction: column;
+
+      .price-details {
+        display: flex;
+        justify-content: space-between;
+
+        .quantity, .price {
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .cash-flow-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .cash-flow-month-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      .cash-flow-item-container {
+        min-width: 300px;
+        max-width: 350px;
+        margin: 8px;
+
+        .cash-flow-item-header {
+          background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+          background-size: cover;
+        }
+      }
+    }
+
+    .red-flag {
+      background-color: red;
+      color: white;
+      padding: 4px 12px;
+    }
+
+    .green-flag {
+      background-color: green;
+      color: white;
+      padding: 4px 12px;
+    }
+  }
+}

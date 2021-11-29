@@ -1,0 +1,259 @@
+<div class="finance-container" *ngIf="isLoaded">
+  <h3>Detalii finante</h3>
+  <div class="login-form">
+    <form [formGroup]="datePickerFormGroup"
+          class="date-picker-container"
+          (ngSubmit)="updateCashFlowData(datePickerFormGroup.controls.startDate.value, datePickerFormGroup.controls.endDate.value, datePickerFormGroup.controls.allCollections.value, datePickerFormGroup.controls.projectCollectionID.value)"
+          #datePickerFormDirective="ngForm">
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Data de start</mat-label>
+        <input matInput [matDatepicker]="picker1" formControlName="startDate">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1 [calendarHeaderComponent]="exampleHeader"></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Data de final</mat-label>
+        <input matInput [matDatepicker]="picker2" formControlName="endDate">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2 [calendarHeaderComponent]="exampleHeader"></mat-datepicker>
+      </mat-form-field>
+      <mat-checkbox formControlName="allCollections" (change)="datePickerFormGroup.get('allCollections').value === true ? datePickerFormGroup.get('projectCollectionID').disable() : datePickerFormGroup.get('projectCollectionID').enable()">Toate colectiile</mat-checkbox>
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Alege o colectie</mat-label>
+        <select matNativeControl formControlName="projectCollectionID">
+          <option *ngFor="let config of projectCollectionsConfiguration" [value]="config.id" [label]="config.name"></option>
+        </select>
+        <mat-hint>Hint: Colectia pentru care se afiseaza detaliile de mai jos</mat-hint>
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit">Afiseaza detalii</button>
+    </form>
+  </div>
+  <div class="accordion-action-buttons">
+    <button mat-button (click)="accordion.openAll()">Expandeaza tot</button>
+    <button mat-button (click)="accordion.closeAll()">Colapseaza tot</button>
+  </div>
+  <mat-accordion class="accordion-container" multi>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Investitii client
+        </mat-panel-title>
+        <mat-panel-description class="accordion-description">
+          Mai jos gasesti toate investitiile realizate
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div>
+        <div class="investments-container">
+          <mat-card *ngFor="let item of investmentItems" class="investment-item-container">
+            <mat-card-header>
+              <div mat-card-avatar class="investment-item-header"></div>
+              <mat-card-title>{{item.name}}</mat-card-title>
+              <mat-card-subtitle>{{dateMap.get(item.id)}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="investment-content">
+              <div>
+                <p>
+                  Data: <b>{{dateMap.get(item.id)}}</b>
+                </p>
+                <p>
+                  Cost: <b>{{item.cost}} RON</b>
+                </p>
+                <p>
+                  Detalii: <b>{{item.description}}</b>
+                </p>
+              </div>
+              <div>
+                <button mat-mini-fab color="primary" (click)="editInvestmentItem(item)">
+                  <mat-icon>edit_note</mat-icon>
+                </button>
+                <button mat-mini-fab color="warn" class="delete-button" (click)="deleteInvestmentItem(item)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <mat-card class="add-new-investment-item-card">
+          <mat-card-header>
+            <div mat-card-avatar class="add-new-investment-item-header"></div>
+            <mat-card-title *ngIf="!updatedInvestmentItem">Adauga o noua investitie</mat-card-title>
+            <mat-card-title *ngIf="updatedInvestmentItem">Actualizeaza investitia selectata</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="investmentItemFormGroup" (ngSubmit)="updateInvestmentItem()" class="add-new-investment-item-form" #investmentItemFormDirective="ngForm">
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Nume</mat-label>
+                <input matInput formControlName="name" />
+                <mat-hint>Hint: Numele noii investitii</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Descriere</mat-label>
+                <textarea matInput formControlName="description"></textarea>
+                <mat-hint>Hint: Scurta descriere a noii investitii</mat-hint>
+              </mat-form-field>
+              <div class="details-container">
+                <mat-form-field appearance="fill" class="form-field">
+                  <mat-label>Data investitiei</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="date">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker [calendarHeaderComponent]="exampleHeader"></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="form-field">
+                  <mat-label>Cost</mat-label>
+                  <input type="number" matInput formControlName="cost" />
+                  <mat-hint>Hint: Costul investitiei</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="form-field">
+                  <mat-label>Colectia asociata</mat-label>
+                  <select matNativeControl formControlName="projectCollectionID" (change)="loadInvestmentProjects(investmentItemFormGroup.controls.projectCollectionID.value)">
+                    <option *ngFor="let config of projectCollectionsConfiguration" [value]="config.id" [label]="config.name"></option>
+                  </select>
+                  <mat-hint>Hint: Colectia la care se aplica investitia. Nu e obligatoriu</mat-hint>
+                </mat-form-field>
+                <mat-form-field *ngIf="investmentProjects && investmentProjects.length" appearance="fill" class="form-field">
+                  <mat-label>Proiectul asociat</mat-label>
+                  <select matNativeControl formControlName="projectID">
+                    <option *ngFor="let config of investmentProjects" [value]="config.id" [label]="config.name"></option>
+                  </select>
+                  <mat-hint>Hint: Proiectul la care se aplica investitia. Nu e obligatoriu</mat-hint>
+                </mat-form-field>
+              </div>
+              <div class="buttons-containers">
+                <button *ngIf="!updatedInvestmentItem" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+                <button *ngIf="updatedInvestmentItem" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+                <button *ngIf="updatedInvestmentItem" mat-mini-fab color="warn" (click)="resetInvestmentForm()">
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Castiguri client
+        </mat-panel-title>
+        <mat-panel-description class="accordion-description">
+          Mai jos gasesti toate castigurile realizate
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div>
+        <div class="earnings-container">
+          <mat-card *ngFor="let item of earningsItems" class="earnings-item-container">
+            <mat-card-header>
+              <div mat-card-avatar class="earnings-item-header"></div>
+              <mat-card-title>{{dateMap.get(item.id)}}</mat-card-title>
+              <mat-card-subtitle>{{item.cost}} RON</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="investment-content">
+              <div>
+                <p>
+                  Colectie: <b>{{earningsCollectionMap.get(item.id)}}</b>
+                </p>
+                <p>
+                  Proiect: <b>{{earningsProjectMap.get(item.id)}}</b>
+                </p>
+                <p>
+                  Detalii: <b>{{item.details}}</b>
+                </p>
+              </div>
+              <div>
+                <button mat-mini-fab color="primary" (click)="editEarningsItem(item)">
+                  <mat-icon>edit_note</mat-icon>
+                </button>
+                <button mat-mini-fab color="warn" class="delete-button" (click)="deleteEarningsItem(item)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <mat-card class="add-new-earnings-item-card">
+          <mat-card-header>
+            <div mat-card-avatar class="add-new-earnings-item-header"></div>
+            <mat-card-title *ngIf="!updatedEarningItem">Adauga un nou castig</mat-card-title>
+            <mat-card-title *ngIf="updatedEarningItem">Actualizeaza castigul selectat</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="earningsItemFormGroup" (ngSubmit)="updateEarningsItem()" class="add-new-earnings-item-form" #earningsItemFormDirective="ngForm">
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Colectia asociata</mat-label>
+                <select matNativeControl formControlName="projectCollectionID" (change)="loadEarningsProjects(earningsItemFormGroup.controls.projectCollectionID.value)">
+                  <option *ngFor="let config of projectCollectionsConfiguration" [value]="config.id" [label]="config.name"></option>
+                </select>
+                <mat-hint>Hint: Colectia la care a generat castigul</mat-hint>
+              </mat-form-field>
+              <mat-form-field *ngIf="earningsProjects && earningsProjects.length" appearance="fill" class="form-field">
+                <mat-label>Proiectul asociat</mat-label>
+                <select matNativeControl formControlName="projectID">
+                  <option *ngFor="let config of earningsProjects" [value]="config.id" [label]="config.name"></option>
+                </select>
+                <mat-hint>Hint: Proiectul care a generat castigul</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Detalii</mat-label>
+                <textarea matInput formControlName="details"></textarea>
+                <mat-hint>Hint: Scurta descriere a castigului generat</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Data incasarii</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="date">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker [calendarHeaderComponent]="exampleHeader"></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Cost</mat-label>
+                <input type="number" matInput formControlName="cost" />
+                <mat-hint>Hint: Costul incasat</mat-hint>
+              </mat-form-field>
+              <div class="buttons-containers">
+                <button *ngIf="!updatedEarningItem" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+                <button *ngIf="updatedEarningItem" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+                <button *ngIf="updatedEarningItem" mat-mini-fab color="warn" (click)="resetEarningsForm()">
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Flux de bani
+        </mat-panel-title>
+        <mat-panel-description class="accordion-description">
+          Verifica mai jos fluxul de bani
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="cash-flow-container">
+        <p>
+          Situatia financiara pentru perioada selectata: {{formattedGlobalStartDate}} - {{formattedGlobalEndDate}}:
+          <span *ngIf="cashFlowData.cashFlow < 0" class="red-flag">{{cashFlowData.cashFlow}} RON</span>
+          <span *ngIf="cashFlowData.cashFlow >= 0" class="green-flag">{{cashFlowData.cashFlow}} RON</span>
+        </p>
+        <div class="cash-flow-month-container">
+          <mat-card *ngFor="let item of cashFlowData.cashFlowDataByMonth" class="cash-flow-item-container">
+            <mat-card-header>
+              <div mat-card-avatar class="cash-flow-item-header"></div>
+              <mat-card-title>{{item.name}}</mat-card-title>
+              <mat-card-subtitle *ngIf="item.cashFlow < 0" class="red-flag">{{item.cashFlow}} RON</mat-card-subtitle>
+              <mat-card-subtitle *ngIf="item.cashFlow >= 0" class="green-flag">{{item.cashFlow}} RON</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p>
+                Data prelucrata: <b>{{dateMap.get(item.name + '1')}} - {{dateMap.get(item.name + '2')}}</b>
+              </p>
+              <p>
+                Situatie financiara: <b>{{item.cashFlow}} RON</b>
+              </p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

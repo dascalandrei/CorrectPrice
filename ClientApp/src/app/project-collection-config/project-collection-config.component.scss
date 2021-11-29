@@ -1,6 +1,7 @@
 .project-collection-container {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 48px;
 
   .view-collections-container {
     flex: 1;
@@ -18,6 +19,7 @@
 
       .action-button-container {
         display: flex;
+        align-self: flex-start;
 
         .action-button {
           margin-left: 16px;
@@ -42,10 +44,16 @@
         margin-bottom: 8px;
       }
 
-      .add-button {
+      .buttons-containers {
+        display: flex;
+        align-items: center;
+        justify-content: end;
         margin-top: 32px;
-        width: 50%;
-        align-self: end;
+
+        .add-button {
+          width: 50%;
+          margin-right: 12px;
+        }
       }
     }
   }

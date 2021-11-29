@@ -1,14 +1,79 @@
-<h1>Hello, world!</h1>
-<p>Welcome to your new single-page application, built with:</p>
-<ul>
-  <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-  <li><a href='https://angular.io/'>Angular</a> and <a href='http://www.typescriptlang.org/'>TypeScript</a> for client-side code</li>
-  <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-</ul>
-<p>To help you get started, we've also set up:</p>
-<ul>
-  <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-  <li><strong>Angular CLI integration</strong>. In development mode, there's no need to run <code>ng serve</code>. It runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-  <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration automatically invokes <code>ng build</code> to produce minified, ahead-of-time compiled JavaScript files.</li>
-</ul>
-<p>The <code>ClientApp</code> subdirectory is a standard Angular CLI application. If you open a command prompt in that directory, you can run any <code>ng</code> command (e.g., <code>ng test</code>), or use <code>npm</code> to install extra packages into it.</p>
+<div class="home-container">
+  <h1>Cum sa folosesti calculatorul de preturi?</h1>
+  <h4 class="step-title">1. Prima data trebuie sa validam clientul asa ca te rog sa introduci numele utilizatorului si pinul asociat</h4>
+  <div class="login-form">
+    <form [formGroup]="loginFormGroup"
+          (ngSubmit)="validateClient(loginFormGroup.controls.username.value, loginFormGroup.controls.password.value)"
+          #loginFormDirective="ngForm">
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Nume utilizator</mat-label>
+        <input matInput formControlName="username" />
+        <mat-hint>Hint: Numele de utilizator</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Parola</mat-label>
+        <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" />
+        <mat-hint>Hint: Parola pentru utilizatorul completat</mat-hint>
+      </mat-form-field>
+      <mat-icon matSuffix (click)="hidePassword = !hidePassword" class="password-button">{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      <button mat-flat-button color="primary" type="submit">Valideaza</button>
+    </form>
+    <p class="successfully-login" *ngIf="askToValidateClient && successfullyLoggedIn">
+      Ai fost logat cu succes! Poti naviga catre
+      <a class="nav-link white-text" [routerLink]="['/finance-details']"><b>Finante</b></a>
+      sau
+      <a class="nav-link white-text" [routerLink]="['/client-projects-collection']"><b>Calculator preturi</b></a>
+    </p>
+    <p class="invalid-login" *ngIf="askToValidateClient && !successfullyLoggedIn">Combinatia de utilizator si parola nu sunt inregistrate in baza de date</p>
+  </div>
+  <h4 class="step-title">2. O data logat ai acces la paginile Calculator preturi si Finante</h4>
+  <ul>
+    <li>
+      <p><b>Calculator preturi</b></p>
+      <p>Aici ai optiunea de a defini:</p>
+      <ul>
+        <li>
+          <p>Categorii/Colectii de proiecte - aici o sa fie adunate toate proiectele care au particularitati asemanatoare</p>
+          <div>
+            <p>La nivel de colectie se pot defini:</p>
+            <ul>
+              <li>
+                <span><b>Proiecte</b> - detaliate mai jos</span>
+              </li>
+              <li>
+                <span><b>Produse brute</b> - produsele brute de la nivel de colectie vor fi importate la nivel de proiect pentru a putea fi folosite. Se declara la nivel de colectie in scop de reutilizare, dar pot fi suprascrise la nivel de proiect</span>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <p>Proiecte - aici se definesc proiectele</p>
+          <p>Proiectul e compus din mai multe produse finite</p>
+          <p>Un <b>produs finit</b> se compune din unul sau mai multe produse brute</p>
+          <p>Pentru a putea folosi un produs brut, acesta trebuie fie importat de la nivel de colectie fi adaugat direct la nivel de proiect</p>
+          <p>Inainte de adaugarea unui produs finit trebuie realizata calcularea costului pentru produsul respectiv</p>
+          <p>In fiecare proiect se poate vedea detaliat costul brut pentru fiecare produs finit in parte</p>
+          <p><b>Inchiderea unui proiect.</b> La inchiderea unui proiect se va genera o investitie, care reprezinta investitia in produsele brute necesare, si un castig, care este suma trecuta in campul corespunzator</p>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <p><b>Finante</b></p>
+      <p>Aici ai optiunea de a defini:</p>
+      <ul>
+        <li>
+          <p><b>Investitii</b> - daca se fac investitii separat de proiecte atunci ele se definesc aici. De asemenea, tot de aici se pot ajusta investitiile generate de proiect</p>
+          <p><b>Exemplu de ajustare:</b>La inchiderea proiectului, sistemul a calculat o investitie de 1000RON pentru produse. Dar poate ca o parte din acestea sunt pierderi de la alte proiecte si atunci vrei sa ajustezi costul investitiei sa fie mai mic de 1000RON</p>
+        </li>
+        <li>
+          <p><b>Castiguri</b> - aici se definesc si se ajusteaza castigurile</p>
+          <p>Teoretic aici nu ar trebui sa fie necesar nici sa se adauge, nici sa se editeze castigurile</p>
+        </li>
+        <li>
+          <p><b>Fluxul de bani</b> - aici se vad statisticile fluxului de bani pe o anumita perioada</p>
+          <p>La incarcarea paginii se vad statisticile pe luna in curs dar acest lucru poate fi schimbat prin folosirea campurilor: data de inceput si data de final</p>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

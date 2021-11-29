@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Web;
 using System.Collections.Generic;
 using System.Linq;
 using CorrectPrice.Client.Models;
-using CorrectPrice.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace CorrectPrice.Client.Controllers
 {
@@ -16,8 +17,6 @@ namespace CorrectPrice.Client.Controllers
         private readonly Core.Contract.Configuration.IRoughProductConfigManager roughProductConfigManager;
         private readonly Core.Contract.Configuration.IFiniteProductConfigManager finiteProductConfigManager;
         private readonly Core.Contract.Configuration.IFinanceManager financeManager;
-
-        private static readonly Guid ClientID = new Guid("EC29F557-E3EC-4FE6-8338-B0FB3F5B6A50");
 
         public ProjectConfigurationController()
         {
@@ -41,17 +40,17 @@ namespace CorrectPrice.Client.Controllers
         }
 
         [HttpPost]
-        public CashFlowData DetailCashFlowData([FromForm]string startDate, [FromForm]string endDate)
+        public CashFlowData DetailCashFlowData([FromForm]string startDate, [FromForm]string endDate, [FromForm]Guid? projectCollectionID)
         {
-            return ConvertToModel(financeManager.DetailCashFlowData(ClientID, DateTime.Parse(startDate), DateTime.Parse(endDate)));
+            return ConvertToModel(financeManager.DetailCashFlowData(ClientID(), DateTime.Parse(startDate), DateTime.Parse(endDate), projectCollectionID));
         }
 
         [HttpPost]
         public ProjectCollectionConfiguration[] ListAllProjectCollections()
         {
-            List<ProjectCollectionConfiguration> projectCollectionConfigurations = new List<ProjectCollectionConfiguration>();
+            List <ProjectCollectionConfiguration> projectCollectionConfigurations = new List<ProjectCollectionConfiguration>();
 
-            foreach (Core.Contract.Configuration.ProjectCollectionConfiguration projectCollectionConfiguration in projectCollectionConfigManager.ListAllProjectCollections(ClientID))
+            foreach (Core.Contract.Configuration.ProjectCollectionConfiguration projectCollectionConfiguration in projectCollectionConfigManager.ListAllProjectCollections(ClientID()))
                 projectCollectionConfigurations.Add(ConvertToModel(projectCollectionConfiguration));
 
             return projectCollectionConfigurations.ToArray();
@@ -102,20 +101,21 @@ namespace CorrectPrice.Client.Controllers
         }
 
         [HttpPost]
-        public EarningsItem[] ListAllEarnings()
+        public EarningsItem[] ListAllEarnings([FromForm]string startDate, [FromForm]string endDate, [FromForm]Guid? projectCollectionID)
         {
-            return ConvertToModel(financeManager.ListAllEarnings(ClientID));
+            return ConvertToModel(financeManager.ListAllEarnings(ClientID(), DateTime.Parse(startDate), DateTime.Parse(endDate), projectCollectionID));
         }
 
         [HttpPost]
-        public InvestmentItem[] ListAllInvestments()
+        public InvestmentItem[] ListAllInvestments([FromForm]string startDate, [FromForm]string endDate, [FromForm]Guid? projectCollectionID)
         {
-            return ConvertToModel(financeManager.ListAllInvestments(ClientID));
+            return ConvertToModel(financeManager.ListAllInvestments(ClientID(), DateTime.Parse(startDate), DateTime.Parse(endDate), projectCollectionID));
         }
 
         [HttpPost]
         public void UpdateProjectCollectionConfiguration(ProjectCollectionConfiguration projectCollectionConfiguration)
         {
+            projectCollectionConfiguration.ClientID = ClientID();
             projectCollectionConfigManager.UpdateProjectCollectionConfiguration(ConvertToContract(projectCollectionConfiguration));
         }
 
@@ -140,13 +140,17 @@ namespace CorrectPrice.Client.Controllers
         [HttpPost]
         public void UpdateEarningsItem(EarningsItem earningsItem)
         {
-            this.financeManager.UpdateEarningItem(ConvertToContract(earningsItem));
+            earningsItem.ClientID = ClientID();
+            earningsItem.Date = earningsItem.Date.ToLocalTime();
+            financeManager.UpdateEarningItem(ConvertToContract(earningsItem));
         }
 
         [HttpPost]
         public void UpdateInvestmentItem(InvestmentItem investmentItem)
         {
-            this.financeManager.UpdateInvestmentItem(ConvertToContract(investmentItem));
+            investmentItem.ClientID = ClientID();
+            investmentItem.Date = investmentItem.Date.ToLocalTime();
+            financeManager.UpdateInvestmentItem(ConvertToContract(investmentItem));
         }
 
         [HttpPost]
@@ -198,9 +202,19 @@ namespace CorrectPrice.Client.Controllers
         }
 
         [HttpPost]
-        public void CloseProject([FromForm] Guid id, [FromForm] string closingDate)
+        public void CloseProject([FromForm] Guid id, [FromForm] string closingDate, [FromForm] string earnings)
         {
-            projectConfigManager.CloseProject(id, DateTime.Parse(closingDate));
+            projectConfigManager.CloseProject(id, DateTime.Parse(closingDate), decimal.Parse(earnings));
+        }
+
+        private Guid ClientID()
+        {
+            string clientIDString = HttpContext.Request.Cookies["ClientID"];
+
+            if (clientIDString == null)
+                Response.Redirect("http://www.microsoft.com/gohere/look.htm");
+
+            return Guid.Parse(clientIDString);
         }
 
         private ProjectCollectionConfiguration ConvertToModel(Core.Contract.Configuration.ProjectCollectionConfiguration projectCollectionConfiguration)
@@ -425,7 +439,8 @@ namespace CorrectPrice.Client.Controllers
         {
             return new CashFlowData()
             {
-                CashFlowDataByMonth = cashFlowData.CashFlowDataByMonth.Select(x => ConvertToModel(x)).ToArray()
+                CashFlowDataByMonth = cashFlowData.CashFlowDataByMonth.Select(x => ConvertToModel(x)).ToArray(),
+                CashFlow = cashFlowData.CashFlow
             };
         }
 

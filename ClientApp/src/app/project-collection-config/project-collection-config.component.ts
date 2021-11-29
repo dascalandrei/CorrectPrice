@@ -34,7 +34,6 @@ export class ProjectCollectionConfigComponent implements OnInit {
 
         const projectCollectionConfiguration: ProjectCollectionConfiguration = {
             id: this.updatedProjectCollection ? this.updatedProjectCollection.id : Guid.newGuid(),
-            clientID: this.projectCollectionForm.get('clientID').value,
             name: this.projectCollectionForm.get('name').value,
             description: this.projectCollectionForm.get('description').value
         };
@@ -52,7 +51,6 @@ export class ProjectCollectionConfigComponent implements OnInit {
         this.updatedProjectCollection = projectCollection;
 
         this.projectCollectionForm = new FormGroup({
-            clientID: new FormControl({ value: projectCollection.clientID, disabled: true }, Validators.required),
             name: new FormControl(projectCollection.name, Validators.required),
             description: new FormControl(projectCollection.description),
         });
@@ -64,9 +62,13 @@ export class ProjectCollectionConfigComponent implements OnInit {
         });
     }
 
+    resetForm() {
+        this.updatedProjectCollection = null;
+        this.initForm();
+    }
+
     private initForm() {
         this.projectCollectionForm = new FormGroup({
-            clientID: new FormControl('', Validators.required),
             name: new FormControl('', Validators.required),
             description: new FormControl(''),
         });

@@ -7,7 +7,6 @@ import { forkJoin } from 'rxjs';
 
 import { RoughProductConfiguration, UnitOfMeasure, FiniteProductConfiguration, ProductDetails, ProjectConfiguration, ProjectConfigurationDetails } from '../core/models/project-configuration.model';
 import { ProjectCollectionConfigService } from '../core/services/project-collection-config.service';
-import { MatDatepickerInputEvent, MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
     selector: 'project-details-config',
@@ -18,6 +17,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
     @ViewChild(MatAccordion) accordion: MatAccordion;
     @ViewChild('roughProductformDirective') private roughProductFormDirective: NgForm;
     @ViewChild('finiteProductformDirective') private finiteProductFormDirective: NgForm;
+    @ViewChild('closeProjectFormDirective') private closeProjectFormDirective: NgForm;
 
     isLoaded: boolean;
     projectConfiguration: ProjectConfiguration;
@@ -28,15 +28,16 @@ export class ProjectDetailsConfigComponent implements OnInit {
     unitOfMeasureValues: string[];
     roughProductFormGroup: FormGroup;
     finiteProductFormGroup: FormGroup;
+    closeProjectFormGroup: FormGroup;
     expandFinalProducts: boolean;
     expandRoughProducts: boolean;
     expandRoughCollectionProducts: boolean;
     updatedRoughProductConfiguration: RoughProductConfiguration;
     updatedFiniteProductConfiguration: FiniteProductConfiguration;
+    isUpdateFiniteProduct: boolean = false;
     isProductImported: Map<string, boolean> = new Map<string, boolean>();
-    isCostCalculatedForFiniteProduct: boolean;
+    isCostCalculatedForFiniteProduct: boolean = false;
     unitOfMeasures = UnitOfMeasure;
-    closingDate: Date;
     displayedColumns1Map: Map<string, string> = new Map<string, string>();
     displayedColumns1: string[] = ['name', 'quantityToBuy', 'quantityNeeded', 'remainQuantity'];
     displayedColumns2: string[] = ['name', 'quantityToBuy', 'costPerQuantityToBuy', 'quantityNeeded', 'costPerQuantityNeeded', 'remainQuantity', 'costPerRemainQuantity'];
@@ -55,9 +56,6 @@ export class ProjectDetailsConfigComponent implements OnInit {
         this.projectCollectionID = this.route.snapshot.paramMap.get('collectionID');
         this.projectID = this.route.snapshot.paramMap.get('projectID');
 
-        this.projectCollectionConfigService.projectCollectionSelected(this.projectCollectionID);
-        this.projectCollectionConfigService.projectSelected(this.projectID);
-
         this.expandFinalProducts = true;
         this.expandRoughProducts = false;
         this.expandRoughCollectionProducts = false;
@@ -74,7 +72,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
 
     importRoughProductAtProject(roughProductConfiguration: RoughProductConfiguration) {
         roughProductConfiguration.importedID = roughProductConfiguration.id;
-        roughProductConfiguration.id = Guid.newGuid();
+        roughProductConfiguration.id = roughProductConfiguration.id;
         roughProductConfiguration.projectCollectionID = null;
         roughProductConfiguration.projectID = this.projectID;
 
@@ -89,6 +87,8 @@ export class ProjectDetailsConfigComponent implements OnInit {
     editRoughProductAtProject(roughProductConfiguration: RoughProductConfiguration) {
         this.updatedRoughProductConfiguration = roughProductConfiguration;
 
+        console.log(roughProductConfiguration.importedID);
+
         this.initRoughProductForm();
     }
 
@@ -96,10 +96,14 @@ export class ProjectDetailsConfigComponent implements OnInit {
         if (!this.roughProductFormGroup.valid)
             return;
 
+        const id: string = this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.id : Guid.newGuid();
+
         const includeInCollection: boolean = this.roughProductFormGroup.get('includeInCollection').value;
 
+        const importedID: string = includeInCollection ? id : null;
+
         const roughProductConfiguration: RoughProductConfiguration = {
-            id: this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.id : Guid.newGuid(),
+            id: id,
             name: this.roughProductFormGroup.get('name').value,
             description: this.roughProductFormGroup.get('description').value,
             quantity: this.roughProductFormGroup.get('quantity').value,
@@ -107,8 +111,8 @@ export class ProjectDetailsConfigComponent implements OnInit {
             cost: this.roughProductFormGroup.get('cost').value,
             effectiveDate: new Date(),
             projectID: this.projectID,
-            projectCollectionID: includeInCollection ? this.projectCollectionID : null,
-            importedID: this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.importedID : null,
+            projectCollectionID: includeInCollection && !this.updatedRoughProductConfiguration ? this.projectCollectionID : null,
+            importedID: importedID,
         };
 
         this.projectCollectionConfigService.updateRoughProductConfiguration(roughProductConfiguration).subscribe(() => {
@@ -128,6 +132,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
 
     editFiniteProductAtProject(finiteProductConfiguration: FiniteProductConfiguration) {
         this.updatedFiniteProductConfiguration = finiteProductConfiguration;
+        this.isUpdateFiniteProduct = true;
 
         this.initFiniteProductForm();
     }
@@ -211,6 +216,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
             this.expandFinalProducts = true;
             this.expandRoughProducts = false;
             this.expandRoughCollectionProducts = false;
+            this.isUpdateFiniteProduct = false;
             this.updatedFiniteProductConfiguration = null;
         });
     }
@@ -225,12 +231,8 @@ export class ProjectDetailsConfigComponent implements OnInit {
             this.columns1ToDisplay.pop();
     }
 
-    changeClosingDate(event: MatDatepickerInputEvent<Date>) {
-        this.closingDate = event.value;
-    }
-
     closeProject() {
-        this.projectCollectionConfigService.closeProject(this.projectID, this.closingDate).subscribe(() => {
+        this.projectCollectionConfigService.closeProject(this.projectID, this.closeProjectFormGroup.get('closeDate').value, this.closeProjectFormGroup.get('earnings').value).subscribe(() => {
             this.router.navigate(['/project-collection', this.projectCollectionID]);
         });
     }
@@ -251,6 +253,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
 
             this.initRoughProductForm();
             this.initFiniteProductForm();
+            this.initCloseProjectForm();
 
             this.collectionRoughProductConfigurations.forEach((collectionProduct: RoughProductConfiguration) => {
                 const isImported = this.projectRoughProductConfigurations.some(x => x.importedID === collectionProduct.id);
@@ -261,6 +264,11 @@ export class ProjectDetailsConfigComponent implements OnInit {
         });
     }
 
+    resetRoughProductForm() {
+        this.updatedRoughProductConfiguration = null;
+        this.initRoughProductForm();
+    }
+
     private initRoughProductForm() {
         this.roughProductFormGroup = new FormGroup({
             name: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.name : '', Validators.required),
@@ -268,7 +276,7 @@ export class ProjectDetailsConfigComponent implements OnInit {
             quantity: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.quantity : '', Validators.required),
             unitOfMeasure: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.unitOfMeasure : '', Validators.required),
             cost: new FormControl(this.updatedRoughProductConfiguration ? this.updatedRoughProductConfiguration.cost : '', Validators.required),
-            includeInCollection: new FormControl(this.updatedRoughProductConfiguration ? !!this.updatedRoughProductConfiguration.projectCollectionID : false),
+            includeInCollection: new FormControl(this.updatedRoughProductConfiguration ? !!this.updatedRoughProductConfiguration.importedID : false),
         });
 
         if (this.roughProductFormDirective)
@@ -311,5 +319,15 @@ export class ProjectDetailsConfigComponent implements OnInit {
         }
 
         return formGroups;
+    }
+
+    private initCloseProjectForm() {
+        this.closeProjectFormGroup = new FormGroup({
+            closeDate: new FormControl({ value: this.projectConfiguration.closeDate ? this.projectConfiguration.closeDate : new Date(), disabled: this.projectConfiguration.closeDate }, Validators.required),
+            earnings: new FormControl({ value: '', disabled: this.projectConfiguration.closeDate }, Validators.required)
+        });
+
+        if (this.closeProjectFormDirective)
+            this.closeProjectFormDirective.resetForm();
     }
 }

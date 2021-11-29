@@ -12,9 +12,9 @@ namespace CorrectPrice.Client.Models
 
         public decimal Cost { get; set; }
 
-        public Guid? ProjectID { get; set; }
+        public Guid ProjectID { get; set; }
 
-        public Guid? ProjectCollectionID { get; set; }
+        public Guid ProjectCollectionID { get; set; }
 
         public Guid ClientID { get; set; }
     }

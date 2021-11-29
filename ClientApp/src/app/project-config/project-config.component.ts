@@ -41,11 +41,6 @@ export class ProjectConfigComponent implements OnInit {
     ngOnInit() {
         this.projectCollectionID = this.route.snapshot.paramMap.get('id');
 
-        if (this.projectCollectionID != this.projectCollectionConfigService.getCurrentCollectionID())
-            this.projectCollectionConfigService.projectSelected(null);
-
-        this.projectCollectionConfigService.projectCollectionSelected(this.projectCollectionID);
-
         this.unitOfMeasureValues = Object.keys(this.unitOfMeasures).filter(k => !isNaN(Number(k)));
         this.expandCollectionProjects = true;
         this.expandRoughProducts = false;
@@ -126,6 +121,16 @@ export class ProjectConfigComponent implements OnInit {
         });
     }
 
+    resetProjectForm() {
+        this.updatedProjectConfiguration = null;
+        this.initProjectForm();
+    }
+
+    resetRoughProductForm() {
+        this.updatedRoughProductConfiguration = null;
+        this.initRoughProductForm();
+    }
+
     private initProjectForm() {
         this.projectForm = new FormGroup({
             name: new FormControl(this.updatedProjectConfiguration ? this.updatedProjectConfiguration.name : '', Validators.required),
@@ -159,10 +164,6 @@ export class ProjectConfigComponent implements OnInit {
             this.projectCollection = response[0];
             this.projects = response[1];
             this.projectRoughProductConfigurations = response[2];
-
-            this.projects.forEach((x: ProjectConfiguration) => {
-                console.log(x.closeDate);
-            });
 
             this.updatedProjectConfiguration = null;
             this.updatedRoughProductConfiguration = null;

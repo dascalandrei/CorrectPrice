@@ -1,5 +1,6 @@
 <div class="project-container" *ngIf="isLoaded">
-  <h3>Detalii proiect {{projectConfiguration.name}}</h3>
+  <a mat-button routerLink="/project-collection/{{projectCollectionID}}">< Inapoi</a>
+  <h3 class="page-title">Detalii proiect {{projectConfiguration.name}}</h3>
   <div class="accordion-action-buttons">
     <button mat-button (click)="accordion.openAll()">Expandeaza tot</button>
     <button mat-button (click)="accordion.closeAll()">Colapseaza tot</button>
@@ -74,8 +75,12 @@
               <p>
                 Pretul pentru cantitatea de mai sus: <b>{{projectRoughProductConfiguration.cost}}</b>
               </p>
-              <button mat-fab color="primary" (click)="editRoughProductAtProject(projectRoughProductConfiguration)">Edit</button>
-              <button mat-fab color="warn" (click)="deleteRoughProductAtProject(projectRoughProductConfiguration)" class="delete-button">Delete</button>
+              <button mat-mini-fab color="primary" (click)="editRoughProductAtProject(projectRoughProductConfiguration)">
+                <mat-icon>edit_note</mat-icon>
+              </button>
+              <button mat-mini-fab color="warn" class="delete-button" (click)="deleteRoughProductAtProject(projectRoughProductConfiguration)">
+                <mat-icon>delete</mat-icon>
+              </button>
             </mat-card-content>
           </mat-card>
         </ng-container>
@@ -98,8 +103,8 @@
           <form [formGroup]="roughProductFormGroup" (ngSubmit)="updateRoughProduct()" class="add-new-rough-product-form" #roughProductformDirective="ngForm">
             <mat-form-field appearance="fill" class="form-field">
               <mat-label>Nume</mat-label>
-              <input matInput formControlName="name" />
-              <mat-hint>Hint: Numele noului produs brut</mat-hint>
+              <input matInput formControlName="name" readonly="{{!!updatedRoughProductConfiguration && !!updatedRoughProductConfiguration.importedID}}" />
+              <mat-hint>Hint: Numele noului produs brut. Acesta nu poate fi editat daca produsul e importat de la nivel de colectie</mat-hint>
             </mat-form-field>
             <mat-form-field appearance="fill" class="form-field">
               <mat-label>Descriere</mat-label>
@@ -125,9 +130,14 @@
                 <mat-hint>Hint: Pretul de achizitie pentru cantitatea mentionata mai sus</mat-hint>
               </mat-form-field>
             </div>
-            <mat-checkbox formControlName="includeInCollection" class="form-field-check-box" color="primary">Include produsul la nivel de colectie daca vrei sa il refolosesti ulterior</mat-checkbox>
-            <button *ngIf="!updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
-            <button *ngIf="updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+            <mat-checkbox formControlName="includeInCollection" class="form-field-check-box" disabled="{{!!updatedRoughProductConfiguration && !!updatedRoughProductConfiguration.importedID}}" color="primary">Include produsul la nivel de colectie daca vrei sa il refolosesti ulterior</mat-checkbox>
+            <div class="buttons-container">
+              <button *ngIf="!updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+              <button *ngIf="updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+              <button *ngIf="updatedRoughProductConfiguration" mat-mini-fab color="warn" (click)="resetRoughProductForm()">
+                <mat-icon>clear</mat-icon>
+              </button>
+            </div>
           </form>
         </mat-card-content>
       </mat-card>
@@ -158,8 +168,8 @@
       <mat-card class="add-new-finite-product-card">
         <mat-card-header>
           <div mat-card-avatar class="add-new-finite-product-header"></div>
-          <mat-card-title *ngIf="!updatedFiniteProductConfiguration">Adauga un nou produs finit</mat-card-title>
-          <mat-card-title *ngIf="updatedFiniteProductConfiguration">Actualizeaza produsul finit</mat-card-title>
+          <mat-card-title *ngIf="!isUpdateFiniteProduct">Adauga un nou produs finit</mat-card-title>
+          <mat-card-title *ngIf="isUpdateFiniteProduct && updatedFiniteProductConfiguration">Actualizeaza produsul finit</mat-card-title>
           <mat-card-subtitle>Dupa ce ai adaugat produsele brute apasa Calculeaza pentru a obtine costul produsului finit</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
@@ -187,7 +197,7 @@
                 <button mat-flat-button color="primary" (click)="addNewRoughProductToAFiniteProduct()">Adauga un nou produs</button>
                 <ng-container formArrayName="productDetails">
                   <div *ngFor="let control of finiteProductFormGroup.get('productDetails').controls; index as i" [formGroupName]="i" class="product-details-form">
-                    <div>
+                    <div class="product-details-container">
                       <mat-form-field appearance="fill" class="form-field import-rough-product">
                         <mat-label>Adauga un nou produs brut:</mat-label>
                         <select matNativeControl formControlName="id">
@@ -200,7 +210,9 @@
                         <input type="number" matInput formControlName="quantity" (blur)="changeRoughProductDetails()" />
                         <mat-hint>Hint: Cantitatea la care se vinde produsul. De exemplu: 1 daca se vinde la 1KG sau la 1L sau la 1buc</mat-hint>
                       </mat-form-field>
-                      <button mat-fab color="warn" (click)="deleteRoughProductFromAFiniteProduct(i)" class="delete-button">Delete</button>
+                      <button mat-mini-fab color="warn" class="delete-button" (click)="deleteRoughProductFromAFiniteProduct(i)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
                     </div>
                     <div>
                       <span>Cost: </span>
@@ -216,8 +228,8 @@
             </div>
             <div class="actions-buttons">
               <button mat-flat-button color="primary" type="button" (click)="calculateCostForFiniteProduct()">Calculeaza</button>
-              <button mat-flat-button color="primary" type="submit" class="add-button" *ngIf="!updatedFiniteProductConfiguration" disabled="{{!isCostCalculatedForFiniteProduct}}">Adauga</button>
-              <button mat-flat-button color="primary" type="submit" class="add-button" *ngIf="updatedFiniteProductConfiguration" disabled="{{!isCostCalculatedForFiniteProduct}}">Actualizeaza</button>
+              <button mat-flat-button color="primary" type="submit" class="add-button" *ngIf="!isUpdateFiniteProduct" disabled="{{!isCostCalculatedForFiniteProduct}}">Adauga</button>
+              <button mat-flat-button color="primary" type="submit" class="add-button" *ngIf="isUpdateFiniteProduct && updatedFiniteProductConfiguration" disabled="{{!isCostCalculatedForFiniteProduct}}">Actualizeaza</button>
             </div>
           </form>
         </mat-card-content>
@@ -323,15 +335,18 @@
       </div>
     </mat-expansion-panel>
   </mat-accordion>
-  <div class="closing-project-container">
-    <div class="closing-project-datepicker">
+  <form [formGroup]="closeProjectFormGroup" (ngSubmit)="closeProject()" #closeProjectDirective="ngForm" class="closing-project-container">
+    <mat-form-field appearance="fill" class="form-field">
       <mat-label>Data de inchidere proiect</mat-label>
-      <input matInput [matDatepicker]="picker" (dateChange)="changeClosingDate($event)">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </div>
-    <div>
-      <button mat-flat-button color="primary" class="close-button" (click)="closeProject()" disabled="{{!closingDate}}">Inchide proiect</button>
-    </div>
-  </div>
+      <input matInput [matDatepicker]="picker1" formControlName="closeDate">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1 [calendarHeaderComponent]="exampleHeader"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="form-field earnings">
+      <mat-label>Castigul generat</mat-label>
+      <input type="number" matInput formControlName="earnings" />
+      <mat-hint>Hint: Suma de bani incasata dupa realizarea proiectului</mat-hint>
+    </mat-form-field>
+    <button mat-flat-button color="primary" class="close-button" disabled="{{!closeProjectFormGroup.valid}}">Inchide proiect</button>
+  </form>
 </div>

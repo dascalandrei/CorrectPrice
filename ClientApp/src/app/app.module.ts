@@ -24,8 +24,12 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { ProjectCollectionConfigComponent } from './project-collection-config/project-collection-config.component';
 import { ProjectCollectionConfigService } from './core/services/project-collection-config.service';
+import { AuthGuardService } from './core/guards/AuthGuard';
+import { LoginService } from './core/services/login.service';
 import { ProjectConfigComponent } from './project-config/project-config.component';
 import { ProjectDetailsConfigComponent } from './project-details-config/project-details-config.component';
+import { FinanceDetailsComponent } from './finance-details/finance-details.component';
+import { DatePipe } from '@angular/common';
 
 
 @NgModule({
@@ -35,7 +39,8 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
         HomeComponent,
         ProjectCollectionConfigComponent,
         ProjectConfigComponent,
-        ProjectDetailsConfigComponent
+        ProjectDetailsConfigComponent,
+        FinanceDetailsComponent
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -56,9 +61,10 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
         MatNativeDateModule,
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },
-            { path: 'client-projects-collection', component: ProjectCollectionConfigComponent },
-            { path: 'project-collection/:id', component: ProjectConfigComponent },
-            { path: 'project-details/:collectionID/:projectID', component: ProjectDetailsConfigComponent }
+            { path: 'finance-details', component: FinanceDetailsComponent, canActivate: [AuthGuardService] },
+            { path: 'client-projects-collection', component: ProjectCollectionConfigComponent, canActivate: [AuthGuardService] },
+            { path: 'project-collection/:id', component: ProjectConfigComponent, canActivate: [AuthGuardService] },
+            { path: 'project-details/:collectionID/:projectID', component: ProjectDetailsConfigComponent, canActivate: [AuthGuardService] }
         ], { relativeLinkResolution: 'legacy' })
     ],
     providers: [{
@@ -70,7 +76,10 @@ import { ProjectDetailsConfigComponent } from './project-details-config/project-
     },
         ApiHttpClient,
         ProjectCollectionConfigService,
-        Guid
+        LoginService,
+        AuthGuardService,
+        Guid,
+        DatePipe
     ],
     bootstrap: [AppComponent]
 })

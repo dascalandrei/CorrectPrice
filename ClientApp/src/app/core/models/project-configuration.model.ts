@@ -1,6 +1,5 @@
 export interface ProjectCollectionConfiguration {
     id: string;
-    clientID: string;
     name: string;
     description: string;
 }
@@ -74,10 +73,8 @@ export interface EarningsItem {
     details: string;
     date: Date;
     cost: number;
-    projectID?: string;
-    projectCollectionID?: string;
-    clientID: number;
-    costPerRemainQuantity: number;
+    projectID: string;
+    projectCollectionID: string;
 }
 
 export interface InvestmentItem {
@@ -88,12 +85,11 @@ export interface InvestmentItem {
     cost: number;
     projectID?: string;
     projectCollectionID?: string;
-    clientID: number;
-    costPerRemainQuantity: number;
 }
 
 export interface CashFlowData {
     cashFlowDataByMonth: CashFlowDataByMonth[];
+    cashFlow: number;
 }
 
 export interface CashFlowDataByMonth {

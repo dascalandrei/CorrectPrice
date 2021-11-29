@@ -5,32 +5,7 @@ import { ProjectCollectionConfiguration, ProjectConfiguration, RoughProductConfi
 
 @Injectable()
 export class ProjectCollectionConfigService {
-    projectCollectionIDObservable: Observable<string>;
-    projectIDObservable: Observable<string>;
-
-    private projectCollectionID: BehaviorSubject<string>;
-    private _projectCollectionID: string;
-    private projectID: BehaviorSubject<string>;
-
     constructor(private httpClient: ApiHttpClient) {
-        this.projectCollectionID = new BehaviorSubject<string>(null);
-        this.projectID = new BehaviorSubject<string>(null);
-
-        this.projectCollectionIDObservable = this.projectCollectionID.asObservable();
-        this.projectIDObservable = this.projectID.asObservable();
-    }
-
-    projectCollectionSelected(projectCollectionID: string) {
-        this.projectCollectionID.next(projectCollectionID);
-        this._projectCollectionID = projectCollectionID;
-    }
-
-    projectSelected(projectID: string) {
-        this.projectID.next(projectID);
-    }
-
-    public getCurrentCollectionID(): string {
-        return this._projectCollectionID;
     }
 
     detailProjectConfigurationDetails(projectID: string): Observable<ProjectConfigurationDetails> {
@@ -47,10 +22,13 @@ export class ProjectCollectionConfigService {
         return this.httpClient.post<ProjectCollectionConfiguration>('ProjectConfiguration/DetailProjectCollection', formData)
     }
 
-    detailCashFlowData(startDate: Date, endDate: Date): Observable<CashFlowData> {
+    detailCashFlowData(startDate: Date, endDate: Date, projectCollectionID: string): Observable<CashFlowData> {
         const formData: FormData = new FormData();
         formData.append("startDate", startDate.toUTCString());
         formData.append("endDate", endDate.toUTCString());
+
+        if (projectCollectionID)
+            formData.append("projectCollectionID", projectCollectionID);
 
         return this.httpClient.post<CashFlowData>('ProjectConfiguration/DetailCashFlowData', formData)
     }
@@ -87,12 +65,26 @@ export class ProjectCollectionConfigService {
         return this.httpClient.post<FiniteProductConfiguration[]>('ProjectConfiguration/ListAllFiniteProductConfigurationsByProject', formData)
     }
 
-    listAllEarnings(): Observable<FiniteProductConfiguration[]> {
-        return this.httpClient.post<FiniteProductConfiguration[]>('ProjectConfiguration/ListAllEarnings', null);
+    listAllEarnings(startDate: Date, endDate: Date, projectCollectionID: string): Observable<EarningsItem[]> {
+        const formData: FormData = new FormData();
+        formData.append("startDate", startDate.toUTCString());
+        formData.append("endDate", endDate.toUTCString());
+
+        if (projectCollectionID)
+            formData.append("projectCollectionID", projectCollectionID);
+
+        return this.httpClient.post<EarningsItem[]>('ProjectConfiguration/ListAllEarnings', formData);
     }
 
-    listAllInvestments(): Observable<FiniteProductConfiguration[]> {
-        return this.httpClient.post<FiniteProductConfiguration[]>('ProjectConfiguration/ListAllInvestments', null);
+    listAllInvestments(startDate: Date, endDate: Date, projectCollectionID: string): Observable<InvestmentItem[]> {
+        const formData: FormData = new FormData();
+        formData.append("startDate", startDate.toUTCString());
+        formData.append("endDate", endDate.toUTCString());
+
+        if (projectCollectionID)
+            formData.append("projectCollectionID", projectCollectionID);
+
+        return this.httpClient.post<InvestmentItem[]>('ProjectConfiguration/ListAllInvestments', formData);
     }
 
     updateProjectCollection(projectCollectionConfiguration: ProjectCollectionConfiguration) {
@@ -172,10 +164,11 @@ export class ProjectCollectionConfigService {
         return this.httpClient.post('ProjectConfiguration/CalculateFiniteProductCosts', finiteProductConfiguration);
     }
 
-    closeProject(id: string, closingDate: Date) {
+    closeProject(id: string, closingDate: Date, earnings: number) {
         const formData: FormData = new FormData();
         formData.append("id", id);
         formData.append("closingDate", closingDate.toUTCString());
+        formData.append("earnings", earnings.toString());
 
         return this.httpClient.post('ProjectConfiguration/CloseProject', formData);
     }

@@ -26,6 +26,7 @@
             "assets": ["src/assets"],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/material-design-icons/iconfont/material-icons.css",
               "src/styles.css"
             ],
             "scripts": []

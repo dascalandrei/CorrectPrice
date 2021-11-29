@@ -1,6 +1,10 @@
 .project-container {
   padding-bottom: 48px;
 
+  .page-title {
+    margin-top: 20px;
+  }
+
   .accordion-action-buttons {
     margin-top: 48px;
     margin-bottom: 12px;
@@ -28,6 +32,7 @@
       flex-wrap: wrap;
 
       .rough-product-container {
+        min-width: 275px;
         max-width: 300px;
         margin: 8px;
 
@@ -70,10 +75,16 @@
           }
         }
 
-        .add-button {
+        .buttons-container {
+          display: flex;
+          align-items: center;
+          justify-content: end;
           margin-top: 32px;
-          width: 50%;
-          align-self: end;
+
+          .add-button {
+            margin-right: 12px;
+            width: 50%;
+          }
         }
       }
     }
@@ -99,6 +110,7 @@
       flex-wrap: wrap;
 
       .finite-product-container {
+        min-width: 275px;
         max-width: 300px;
         margin: 8px;
 
@@ -151,6 +163,17 @@
           justify-content: space-between;
           align-items: center;
           margin: 12px 0px;
+
+          .product-details-container {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            margin-right: 96px;
+
+            .import-rough-product {
+              flex-grow: 1;
+            }
+          }
         }
 
         .product-total-cost {
@@ -235,12 +258,8 @@
     align-items: center;
     margin-top: 16px;
 
-    .closing-project-datepicker{
-      margin-right: 12px;
-
-      input {
-        border-bottom-style: solid;
-      }
+    .form-field {
+      margin: 8px;
     }
   }
 }

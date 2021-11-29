@@ -1,5 +1,6 @@
 <div class="project-config-container" *ngIf="isLoaded">
-  <h3>Lista proiecte si produsele brute pentru colectia: {{projectCollection.name}}</h3>
+  <a mat-button routerLink="/client-projects-collection">< Inapoi</a>
+  <h1 class="page-title">Lista proiecte si produsele brute pentru colectia: {{projectCollection.name}}</h1>
   <div class="accordion-action-buttons">
     <button mat-button (click)="accordion.openAll()">Expandeaza tot</button>
     <button mat-button (click)="accordion.closeAll()">Colapseaza tot</button>
@@ -18,14 +19,14 @@
         <mat-card *ngFor="let project of projects" class="project-container">
           <mat-card-header>
             <div mat-card-avatar class="project-header"></div>
-              <div class="project-title-container" *ngIf="!project.closeDate">
-                <mat-card-title>{{project.name}}</mat-card-title>
-                <mat-card-subtitle><span class="project-open">Proiect deschis</span></mat-card-subtitle>
-              </div>
-              <div class="project-title-container" *ngIf="project.closeDate">
-                <mat-card-title><span>{{project.name}}</span></mat-card-title>
-                <mat-card-subtitle><span class="project-closed">PROIECT INCHIS</span></mat-card-subtitle>
-              </div>
+            <div class="project-title-container" *ngIf="!project.closeDate">
+              <mat-card-title>{{project.name}}</mat-card-title>
+              <mat-card-subtitle><span class="project-open">Proiect deschis</span></mat-card-subtitle>
+            </div>
+            <div class="project-title-container" *ngIf="project.closeDate">
+              <mat-card-title><span>{{project.name}}</span></mat-card-title>
+              <mat-card-subtitle><span class="project-closed">Proiect inchis</span></mat-card-subtitle>
+            </div>
           </mat-card-header>
           <mat-card-content>
             <p class="project-description" matTooltip="{{project.description}}">
@@ -33,10 +34,16 @@
             </p>
             <div class="action-button-container">
               <div>
-                <button mat-fab color="primary" (click)="viewProject(project)">View</button>
-                <button mat-fab color="primary" class="edit-button" (click)="editProject(project)">Edit</button>
+                <button mat-mini-fab color="primary" (click)="viewProject(project)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-mini-fab color="primary" class="edit-button" (click)="editProject(project)">
+                  <mat-icon>edit_note</mat-icon>
+                </button>
               </div>
-              <button mat-fab color="warn" (click)="deleteProject(project)">Delete</button>
+              <button mat-mini-fab color="warn" (click)="deleteProject(project)">
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
           </mat-card-content>
         </mat-card>
@@ -59,8 +66,13 @@
               <textarea matInput formControlName="description" class="project-description"></textarea>
               <mat-hint>Hint: Scurta descriere a noului proiect</mat-hint>
             </mat-form-field>
-            <button *ngIf="!updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
-            <button *ngIf="updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+            <div class="buttons-containers">
+              <button *ngIf="!updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+              <button *ngIf="updatedProjectConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+              <button *ngIf="updatedProjectConfiguration" mat-mini-fab color="warn" class="action-button" (click)="resetProjectForm()">
+                <mat-icon>clear</mat-icon>
+              </button>
+            </div>
           </form>
         </mat-card-content>
       </mat-card>
@@ -91,8 +103,12 @@
             <p>
               Pretul pentru cantitatea de mai sus: <b>{{projectRoughProductConfiguration.cost}}</b>
             </p>
-            <button mat-fab color="primary" class="edit-button" (click)="editRoughProductAtProject(projectRoughProductConfiguration)">Edit</button>
-            <button mat-fab color="warn" (click)="deleteRoughProductAtProject(projectRoughProductConfiguration)" class="delete-button">Delete</button>
+            <button mat-mini-fab color="primary" class="edit-button" (click)="editRoughProductAtProject(projectRoughProductConfiguration)">
+              <mat-icon>edit_note</mat-icon>
+            </button>
+            <button mat-mini-fab color="warn" class="delete-button" (click)="deleteRoughProductAtProject(projectRoughProductConfiguration)">
+              <mat-icon>delete</mat-icon>
+            </button>
           </mat-card-content>
         </mat-card>
       </div>
@@ -134,8 +150,13 @@
                 <mat-hint>Hint: Pretul de achizitie pentru cantitatea mentionata mai sus</mat-hint>
               </mat-form-field>
             </div>
-            <button *ngIf="!updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
-            <button *ngIf="updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+            <div class="buttons-containers">
+              <button *ngIf="!updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Adauga</button>
+              <button *ngIf="updatedRoughProductConfiguration" mat-flat-button color="primary" type="submit" class="add-button">Actualizeaza</button>
+              <button *ngIf="updatedRoughProductConfiguration" mat-mini-fab color="warn" class="action-button" (click)="resetRoughProductForm()">
+                <mat-icon>clear</mat-icon>
+              </button>
+            </div>
           </form>
         </mat-card-content>
       </mat-card>

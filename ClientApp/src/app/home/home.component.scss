@@ -1,0 +1,52 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+.home-container {
+  padding-bottom: 48px;
+
+  .step-title {
+    margin-top: 32px;
+    margin-bottom: 20px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+
+    .form-field {
+      margin: 8px;
+    }
+
+    .password-button {
+      cursor: pointer;
+      margin-right: 20px;
+    }
+
+    .successfully-login {
+      width: 50%;
+      text-align: center;
+      margin-top: 20px;
+      background-color: green;
+      color: white;
+      padding: 4px 12px;
+    }
+
+    .invalid-login {
+      width: 50%;
+      text-align: center;
+      margin-top: 20px;
+      background-color: red;
+      color: white;
+      padding: 4px 12px;
+    }
+
+    .white-text {
+      color: white;
+
+      :hover {
+        color: lightgrey;
+      }
+    }
+  }
+}
