@@ -212,7 +212,7 @@ namespace CorrectPrice.Client.Controllers
             string clientIDString = HttpContext.Request.Cookies["ClientID"];
 
             if (clientIDString == null)
-                Response.Redirect("http://www.microsoft.com/gohere/look.htm");
+                Response.Redirect("https://localhost:44390/");
 
             return Guid.Parse(clientIDString);
         }
