@@ -12,8 +12,6 @@ export class LoginService {
         formData.append("username", username);
         formData.append("password", password);
 
-        console.log(username);
-
         return this.httpClient.post<boolean>('Login/ValidateClient', formData)
     }
 }

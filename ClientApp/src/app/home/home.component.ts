@@ -28,8 +28,6 @@ export class HomeComponent implements OnInit {
             this.askToValidateClient = true;
             this.successfullyLoggedIn = response;
             sessionStorage.setItem("successfullyLoggedIn", response.toString());
-
-            console.log(response);
         });
     }
 

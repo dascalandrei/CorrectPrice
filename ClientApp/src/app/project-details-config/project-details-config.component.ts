@@ -87,8 +87,6 @@ export class ProjectDetailsConfigComponent implements OnInit {
     editRoughProductAtProject(roughProductConfiguration: RoughProductConfiguration) {
         this.updatedRoughProductConfiguration = roughProductConfiguration;
 
-        console.log(roughProductConfiguration.importedID);
-
         this.initRoughProductForm();
     }
 
