@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --base-href ./ ",
     "build:ssr": "ng run CorrectPrice:server:dev",
     "test": "ng test",
     "lint": "ng lint",
@@ -45,6 +45,7 @@
     "@types/jasmine": "~3.3.9",
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "~11.10.5",
+    "angular-cli-ghpages": "^1.0.0",
     "codelyzer": "^5.0.1",
     "jasmine-core": "~3.3.0",
     "jasmine-spec-reporter": "~4.2.1",
