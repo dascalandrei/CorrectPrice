@@ -24,6 +24,8 @@ export class HomeComponent implements OnInit {
     }
 
     validateClient(username: string, password: string) {
+        console.log('validateClient');
+
         this.loginService.validateClient(username, password).subscribe((response: boolean) => {
             this.askToValidateClient = true;
             this.successfullyLoggedIn = response;
