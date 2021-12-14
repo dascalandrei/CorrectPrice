@@ -15,7 +15,8 @@ export class ApiHttpClient {
         return this.httpClient.post<T>(this.getBaseUrl() + relativeUrl, body);
     }
 
-    private getBaseUrl() {
-        return document.getElementsByTagName('base')[0].href;
+    private getBaseUrl(): string {
+        //return document.getElementsByTagName('base')[0].href;
+        return 'http://localhost/CorrectPrice/';
     }
 }
