@@ -16,6 +16,7 @@ export class ApiHttpClient {
     }
 
     private getBaseUrl(): string {
-        return document.getElementsByTagName('base')[0].href;
+        //return document.getElementsByTagName('base')[0].href;
+        return 'http://localhost/';
     }
 }
