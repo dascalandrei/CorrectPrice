@@ -12,6 +12,9 @@ export class ApiHttpClient {
     }
 
     post<T>(relativeUrl: string, body: object): Observable<T> {
+        console.log('-----------------------');
+        console.log(this.getBaseUrl());
+        console.log(relativeUrl);
         return this.httpClient.post<T>(this.getBaseUrl() + relativeUrl, body);
     }
 
