@@ -12,14 +12,10 @@ export class ApiHttpClient {
     }
 
     post<T>(relativeUrl: string, body: object): Observable<T> {
-        console.log('-----------------------');
-        console.log(this.getBaseUrl());
-        console.log(relativeUrl);
         return this.httpClient.post<T>(this.getBaseUrl() + relativeUrl, body);
     }
 
     private getBaseUrl(): string {
-        //return document.getElementsByTagName('base')[0].href;
-        return 'http://localhost/';
+        return document.getElementsByTagName('base')[0].href;
     }
 }

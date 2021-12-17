@@ -65,7 +65,7 @@ import { DatePipe } from '@angular/common';
             { path: 'client-projects-collection', component: ProjectCollectionConfigComponent, canActivate: [AuthGuardService] },
             { path: 'project-collection/:id', component: ProjectConfigComponent, canActivate: [AuthGuardService] },
             { path: 'project-details/:collectionID/:projectID', component: ProjectDetailsConfigComponent, canActivate: [AuthGuardService] }
-        ], { useHash: true })
+        ], { relativeLinkResolution: 'legacy' })
     ],
     providers: [{
         provide: LOCALE_ID,
